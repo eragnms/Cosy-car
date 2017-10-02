@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '4.0.0.dev26'
+__version__ = '0.0.1.dev1'
 
 
 with open('README.rst') as f:
@@ -30,12 +30,12 @@ setup(
     license=license,
     entry_points={
         'console_scripts': [
-            'cosycar = cosycar.__main__:main'
+            'cosycar = cosycar.cosycar:main'
             ]
     },
     packages=['cosycar'],
     install_requires=[
-        'pkg_resources',
+        '',
     ],
 )
 
