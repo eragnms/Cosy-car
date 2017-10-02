@@ -1,4 +1,4 @@
 Cosycar
 ----------
 
-Helps keep your car cosy during cold days.
+Helps keep your car cosy during cold days...
