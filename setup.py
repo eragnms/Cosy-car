@@ -1,17 +1,25 @@
 # -*- coding: utf-8 -*-
 # Learn more: https://github.com/kennethreitz/setup.py
+import re
+import io
+import os
 from setuptools import setup, find_packages
 
-# Version numbering scheme, see
-# https://packaging.python.org/distributing/#choosing-a-versioning-scheme
-# 1.2.0.dev1  # Development release
-# 1.2.0a1     # Alpha Release
-# 1.2.0b1     # Beta Release
-# 1.2.0rc1    # Release Candidate
-# 1.2.0       # Final Release
-# 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev1'
 
+def read(*names, **kwargs):
+    with io.open(
+            os.path.join(os.path.dirname(__file__), *names),
+        encoding=kwargs.get("encoding", "utf8")
+    ) as fp:
+        return fp.read()
+
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 with open('README.rst') as f:
     readme = f.read()
@@ -21,7 +29,7 @@ with open('LICENSE') as f:
 
 setup(
     name='cosycar',
-    version=__version__,
+    version=find_version("cosycar/cosycar.py"),
     description='Keep your car cosy with heaters and Vera',
     long_description=readme,
     author='Mats Gustafsson',
