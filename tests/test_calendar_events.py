@@ -19,9 +19,6 @@ class CalendarEventsTests(unittest.TestCase):
         events = CalendarEvents()
         self.assertIsInstance(events, CalendarEvents)
 
-    def test_add_next_test(self):
-        self.assertTrue(False)
-
 
 if __name__ == '__main__':
     unittest.main()

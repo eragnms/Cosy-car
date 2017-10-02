@@ -1,5 +1,9 @@
 init:
 	pip install -r requirements.txt
+	pip install .
 
 test:
-	nosetests tests
+	python -m unittest
+
+integration:
+	tests/cosycar_integration.py

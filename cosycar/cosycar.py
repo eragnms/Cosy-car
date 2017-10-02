@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import pkg_resources
-
 from .calendar_events import CalendarEvents
 
 # Version numbering scheme, see
@@ -12,13 +10,13 @@ from .calendar_events import CalendarEvents
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev2'
+__version__ = '0.0.1.dev3'
 
 
 def main():
     print('Hello world!')
-    version = pkg_resources.get_distribution("cosycar").version
-    print(version)
+    print(__version__)
+
 
 if __name__ == "__main__":
     main()
