@@ -18,6 +18,9 @@ class CalendarEventsTests(unittest.TestCase):
     def test_instance_of_calendar_Event(self):
         events = CalendarEvents()
         self.assertIsInstance(events, CalendarEvents)
+        
+    def test_add_more_tests(self):
+        self.assertTrue(False)
 
 
 if __name__ == '__main__':
