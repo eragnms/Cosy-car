@@ -20,6 +20,6 @@ or
 
   $ pip install .
 
-After installation it can be invoked with:
+After installation the script it can be invoked with:
 
   $ cosycar
