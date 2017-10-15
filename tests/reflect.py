@@ -5,9 +5,9 @@
 # https://gist.github.com/1kastner/e083f9e813c0464e6a2ec8910553e632
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from optparse import OptionParser
+import argparse
 
-PORT = 8085
+DEFAULT_PORT = 8080
 HTTP_LOG_FILE = 'tests/data/http_log_file.log'
 SEND_RESPONSE = False
 
@@ -51,14 +51,20 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    port = PORT
+    usage_text = "Creates http-server that will echo GET or POST parameters\n"
+    parser = argparse.ArgumentParser(description=usage_text)
+    parser.add_argument("-p",
+                        "--port",
+                        help="port on localhost to monitor, default 8080",
+                        type=int)
+    args = parser.parse_args()
+    if args.port:
+        port = args.port
+    else:
+        port = DEFAULT_PORT
     server = HTTPServer(('', port), RequestHandler)
     server.serve_forever()
 
 
 if __name__ == "__main__":
-    parser = OptionParser()
-    usage_text = "Creates http-server that will echo GET or POST parameters\n"
-    parser.usage = (usage_text)
-    (options, args) = parser.parse_args()
     main()
