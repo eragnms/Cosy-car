@@ -5,14 +5,15 @@ import time
 
 PORT = 8085
 HTTP_LOG_FILE = 'tests/data/http_log_file.log'
+COSYCAR_RUN_PERIOD = 2
 NO_HEATER_RUNNING = 0
 BLOCK_HEATER_RUNNING = 1
 COMP_HEATER_1_RUNNING = 2
 COMP_HEATER_2_RUNNING = 4
-INTERVALS = [(10, NO_HEATER_RUNNING),
-             (10, BLOCK_HEATER_RUNNING),
-             (10, BLOCK_HEATER_RUNNING | COMP_HEATER_1_RUNNING),
-             (10, NO_HEATER_RUNNING)]
+INTERVALS = [(2, NO_HEATER_RUNNING),
+             (2, BLOCK_HEATER_RUNNING),
+             (2, BLOCK_HEATER_RUNNING | COMP_HEATER_1_RUNNING),
+             (2, NO_HEATER_RUNNING)]
 
 class IntegrationError(Exception):
     def __init__(self, value):
@@ -20,33 +21,67 @@ class IntegrationError(Exception):
     def __str__(self):
         return repr(self.value)
 
+class Heaters():
+    def __init__(self):
+        running_heaters = NO_HEATER_RUNNING
+        expected_heaters_running = NO_HEATER_RUNNING
+
+    
+        
 def setup():
-    os.remove(HTTP_LOG_FILE)
+    try:
+        os.remove(HTTP_LOG_FILE)
+    except:
+        pass
     # Modify config file
     # Start HTTP monitor
 
 def teardown():
     pass
 
-setup()
+def main():
+    setup()
 
+    time_to_run = 0
+    for interval_length, c in INTERVALS:
+        time_to_run += interval_length
+    start_time = time.time()
+    end_time = start_time + time_to_run
+    next_run = start_time
 
-total_run_time = sum of intervals...
-start_time = time.time()
-end_time = start_time + 
-now = time.time()
-
-while now < end_time:
-    
-    now = time.time()
-
-
-
-result = os.system('cosycar >/dev/null 2>&1')
-if result:
+    heaters = Heaters()
+    current_interval = 1
+    while test_is_not_ready(end_time):
+        if time_to_run_cosycar(next_run):
+            result = os.system('cosycar >/dev/null 2>&1')    
+            if result:
+                teardown()
+                error = "Cosycar failed in interval {} with code {}"
+                raise IntegrationError(error.format(current_interval, result))
+            if not correct_heaters_running(heaters, current_interval):
+                error = "Running, expected....
+                
+            next_run += COSYCAR_RUN_PERIOD
+        current_interval = check_current_interval(current_interval, start_time)
+        
     teardown()
-    raise IntegrationError('Integration test failed with: {}'.format(result))
-else:
-    print('Integration test OK!')
 
-teardown()
+def test_is_not_ready(end_time):
+    return time.time() < end_time
+
+def time_to_run_cosycar(next_run):
+    return time.time() >= next_run
+
+def check_current_interval(current_interval, start_time):
+    next_interval_start = start_time
+    for n in range (0, current_interval):
+        interval_length, c = INTERVALS[n]
+        next_interval_start += interval_length
+    now = time.time()
+    if now > next_interval_start:
+        return current_interval + 1
+    else:
+        return current_interval
+
+if __name__ == "__main__":
+    main()    
