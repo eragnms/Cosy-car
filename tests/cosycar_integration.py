@@ -19,14 +19,7 @@ class IntegrationError(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
-        return repr(self.value)
-
-class Heaters():
-    def __init__(self):
-        running_heaters = NO_HEATER_RUNNING
-        expected_heaters_running = NO_HEATER_RUNNING
-
-    
+        return repr(self.value)    
         
 def setup():
     try:
@@ -49,7 +42,6 @@ def main():
     end_time = start_time + time_to_run
     next_run = start_time
 
-    heaters = Heaters()
     current_interval = 1
     while test_is_not_ready(end_time):
         if time_to_run_cosycar(next_run):
@@ -58,9 +50,8 @@ def main():
                 teardown()
                 error = "Cosycar failed in interval {} with code {}"
                 raise IntegrationError(error.format(current_interval, result))
-            if not correct_heaters_running(heaters, current_interval):
-                error = "Running, expected....
-                
+           is_correct_heaters_running(current_interval)
+              
             next_run += COSYCAR_RUN_PERIOD
         current_interval = check_current_interval(current_interval, start_time)
         
@@ -82,6 +73,14 @@ def check_current_interval(current_interval, start_time):
         return current_interval + 1
     else:
         return current_interval
+     
+ def is_correct_heaters_running(current_interval):
+     running_heaters = which_heaters_are_running()
+     expected_heaters = which_heaters_should_run(current_interval)
+     if running_heaters != expected_heaters:
+        error('Wrong heateres running ininterval {}, expected {}, got {}')
+        raise IntegrationeError(error)
+     return True
 
 if __name__ == "__main__":
     main()    
