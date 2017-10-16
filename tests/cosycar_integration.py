@@ -14,6 +14,14 @@ INTERVALS = [(2, NO_HEATER_RUNNING),
              (2, BLOCK_HEATER_RUNNING),
              (2, BLOCK_HEATER_RUNNING | COMP_HEATER_1_RUNNING),
              (2, NO_HEATER_RUNNING)]
+BLOCK_HEATER_ID = 1
+COMP_HEATER_1_ID = 2
+
+class Heater():
+    zwave_id = x
+    run_id = 2^n
+    is_on = False
+    
 
 class IntegrationError(Exception):
     def __init__(self, value):
@@ -46,12 +54,8 @@ def main():
     while test_is_not_ready(end_time):
         if time_to_run_cosycar(next_run):
             result = os.system('cosycar >/dev/null 2>&1')    
-            if result:
-                teardown()
-                error = "Cosycar failed in interval {} with code {}"
-                raise IntegrationError(error.format(current_interval, result))
-           is_correct_heaters_running(current_interval)
-              
+            check_result(result, current_interval)
+            check_heaters_running(current_interval)
             next_run += COSYCAR_RUN_PERIOD
         current_interval = check_current_interval(current_interval, start_time)
         
@@ -73,8 +77,14 @@ def check_current_interval(current_interval, start_time):
         return current_interval + 1
     else:
         return current_interval
-     
- def is_correct_heaters_running(current_interval):
+
+def check_result(result, current_interval):
+    if result:
+        teardown()
+        error = "Cosycar failed in interval {} with code {}"
+        raise IntegrationError(error.format(current_interval, result))
+    
+def check_heaters_running(current_interval):
      running_heaters = which_heaters_are_running()
      expected_heaters = which_heaters_should_run(current_interval)
      if running_heaters != expected_heaters:
@@ -82,5 +92,14 @@ def check_current_interval(current_interval, start_time):
         raise IntegrationeError(error)
      return True
 
+def which_heaters_are_running():
+    with open(HTTP_LOG_FILE, 'r') as log_file:
+        entries = log_file.read()
+    
+              
+     # On = http://$ip_address:3480/data_request?id=action&output_format=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1
+     # Off = http://$ip_address:3480/data_request?id=action&output_format=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0
+
+ 
 if __name__ == "__main__":
     main()    
