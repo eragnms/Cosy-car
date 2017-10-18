@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 init:
 	source /home/mats/.virtualenvs/cosytest/bin/activate; \
+	pip install -r requirements.txt; \
 	pip install .
 
 unittest:
@@ -9,7 +10,7 @@ unittest:
 
 integration:
 	source /home/mats/.virtualenvs/cosytest/bin/activate; \
-	tests/cosycar_integration.py
+	tests/integration.py
 
 end-to-end: init integration
 

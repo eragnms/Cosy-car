@@ -3,13 +3,14 @@
 
 import os
 import time
+import subprocess
 
 def main():
     test_cases = init_test_cases()
     for test_case in test_cases:
-        setup()
+        process = setup()
         test_case.run()
-        teardown()
+        teardown(process)
 
 def init_test_cases():
     test_cases = [TestForcedStart(),
@@ -21,11 +22,11 @@ def setup():
         os.remove(HTTP_LOG_FILE)
     except:
         pass
-   # start reflect.py as a daemon
+    process = subprocess.Popen(['tests/reflect.py'],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return process
 
-def teardown():
-    # kill reflect.py
-    pass
+def teardown(process):
+    os.kill(process.pid, signal.SIGTERM)
 
 
 class TestForcedStart():
@@ -108,6 +109,10 @@ class TestEngine():
         statuses = {10: False, 11: False}
         return statuses
 
+     # On = http://$ip_address:3480/data_request?id=action&output_format=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1
+     # Off = http://$ip_address:3480/data_request?id=action&output_format=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0
+
+    
 
 class IntegrationError(Exception):
     def __init__(self, value):
