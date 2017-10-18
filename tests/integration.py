@@ -12,8 +12,8 @@ def main():
         teardown()
 
 def init_test_cases():
-    test_cases[TestForcedStart(),
-               TestSomethingElse()]
+    test_cases = [TestForcedStart(),
+                  TestSomethingElse()]
     return test_cases
 
 def setup():
@@ -21,10 +21,10 @@ def setup():
         os.remove(HTTP_LOG_FILE)
     except:
         pass
-    start reflect.py as a daemon
+   # start reflect.py as a daemon
 
 def teardown():
-    kill reflect.py
+    # kill reflect.py
     pass
 
 
@@ -38,7 +38,7 @@ class TestForcedStart():
     comp_heater_expected_start_time = 25
     comp_heater_expected_stop_time = 50
 
-    def __init__():
+    def __init__(self):
         block_heater = Heater(self.block_heater_zwave_id,
                               self.block_heater_expected_start_time,
                               self.block_heater_expected_stop_time)
@@ -47,31 +47,31 @@ class TestForcedStart():
                              self.comp_heater_expected_stop_time)
         self.heaters = [block_heater, comp_heater]
             
-    def run():
-        os.system('cosycar --leave_in 40 >/dev/null 2>&1')
+    def run(self):
+        os.system('cosycar >/dev/null 2>&1')
         test_engine = TestEngine(self.heaters)
         try:
             test_engine.run(self.run_time)
         except IntegrationError as e:
-            raise IntegrationError(self.description + ' ' + e.value)
+            raise IntegrationError(self.description + ': ' + e.value)
         
 class TestSomethingElse():
-    def __init__():
+    def __init__(self):
         self.description = 'TestSomethingElse'
 
-    def run():
+    def run(self):
         pass
         
 
 class Heater():
-    def __init__(zwave_id, start_time, stop_time):
+    def __init__(self, zwave_id, start_time, stop_time):
         self.zwave_id = zwave_id 
         self.start_time = start_time
         self.stop_time = stop_time
 
-    def check_status(now, is_actually_on):
+    def check_status(self, now, is_actually_on):
         expected_to_be_on = self._should_heater_be_on(now)
-        if is_actually_on != expected_to_be_on
+        if is_actually_on != expected_to_be_on:
             error_text = 'Heater with id {} has status {}, expected'
             error_text += ' status {}, time is {}'
             raise IntegrationError(error_text.format(self.zwave_id,
@@ -79,8 +79,8 @@ class Heater():
                                                      expected_to_be_on,
                                                      now))
         
-    def _should_heater_be_on(now):
-        if (now >= start_time) and (now < stop_time):
+    def _should_heater_be_on(self, now):
+        if (now >= self.start_time) and (now < self.stop_time):
             return True
         else:
             return False
@@ -88,24 +88,24 @@ class Heater():
 
 class TestEngine():
     _cosycar_run_period = 2
-    def __init__(heaters):
+    def __init__(self, heaters):
         self.heaters = heaters
 
-    def run(run_time):
+    def run(self, run_time):
         test_start_time = time.time()
         now = 0
         next_cosycar_run = now
         while now < run_time:
             if now >= next_cosycar_run:
-                os.system('cosycar --check >/dev/null 2>&1')
+                os.system('cosycar >/dev/null 2>&1')
                 heater_statuses = self._check_heater_statuses()
                 for heater in self.heaters:
                     heater.check_status(now, heater_statuses[heater.zwave_id])
                 next_cosycar_run += self._cosycar_run_period
             now = time.time() - test_start_time
 
-    def _check_heater_statuses():
-        statuses = {10: True, 11: False}
+    def _check_heater_statuses(self):
+        statuses = {10: False, 11: False}
         return statuses
 
 
