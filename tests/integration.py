@@ -18,7 +18,7 @@ def main():
             test_case.run()
         except TestFailure as e:
             teardown(process)
-            raise TestFailure(test_case.description) from e
+            raise TestFailure(test_case.name) from e
         except Exception:
             teardown(process)
             raise Exception(traceback.format_exc())
@@ -43,14 +43,14 @@ def teardown(process):
 
 
 class TestForcedStart():
-    description = 'Test Forced Start'
-    run_time = 60
-    block_heater_zwave_id = 10
-    block_heater_expected_start_time = 10
-    block_heater_expected_stop_time = 50
+    name = 'Test Forced Start'
     comp_heater_zwave_id = 11
-    comp_heater_expected_start_time = 25
-    comp_heater_expected_stop_time = 50
+    block_heater_zwave_id = 10
+    total_run_time = 20
+    block_heater_expected_start_time = 5
+    block_heater_expected_stop_time = 20
+    comp_heater_expected_start_time = 15
+    comp_heater_expected_stop_time = 20
 
     def __init__(self):
         block_heater = Heater(self.block_heater_zwave_id,
@@ -64,7 +64,7 @@ class TestForcedStart():
     def run(self):
         os.system('cosycar >/dev/null 2>&1')
         test_engine = TestEngine(self.heaters)
-        test_engine.run(self.run_time)
+        test_engine.run(self.total_run_time)
                 
 class TestSomethingElse():
     def __init__(self):
@@ -79,15 +79,24 @@ class Heater():
         self.zwave_id = zwave_id 
         self.start_time = start_time
         self.stop_time = stop_time
+        self.touched = False
 
     def check_status(self, now, is_actually_on):
-        expected_to_be_on = self._should_heater_be_on(now)
-        if is_actually_on != expected_to_be_on:
-            error_text = 'Heater with id {} has status {}, expected'
-            error_text += ' status {}, time is {}'
+        is_expected_to_be_on = self._should_heater_be_on(now)
+        if is_actually_on != is_expected_to_be_on:
+            if is_actually_on:
+                current_status = 'ON'
+            else:
+                currne_status = 'OFF'
+            if is_expected_to_be_on:
+                expected_status = 'ON'
+            else:
+                expected_status = 'OFF'
+            error_text = 'Heater with id {} is {}, but is expected to be {}'
+            error_text += ', time is now {}'
             raise TestFailure(error_text.format(self.zwave_id,
-                                                     is_actually_on,
-                                                     expected_to_be_on,
+                                                     current_status,
+                                                     expected_status,
                                                      now))
         
     def _should_heater_be_on(self, now):
@@ -114,13 +123,12 @@ class TestEngine():
                     try:
                         heater.check_status(now,
                                             heater_statuses[heater.zwave_id])
+                        heater.touched = True
                     except KeyError:
-                        # ToDo: here we should mark that the heater did not
-                        # have any status info and raise an error if the
-                        # device never gets any status set.
                         pass
                 next_cosycar_run += self._cosycar_run_period
             now = time.time() - test_start_time
+        self._have_heaters_been_touched(self.heaters)
 
     def _check_heater_statuses(self):
         try:
@@ -155,7 +163,12 @@ class TestEngine():
                 info = selftr(info[0])
         return info
 
-
+    def _have_heaters_been_touched(self, heaters):
+        for heater in heaters:
+            if not heater.touched:
+                error_text = 'Heater with zwave ID {} has not been switched '
+                error_text += 'during the test.'
+                raise TestFailure(error_text.format(heater.zwave_id))
 
      # On = http://$ip_address:3480/data_request?id=action&output_format=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1
      # Off = http://$ip_address:3480/data_request?id=action&output_format=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0
