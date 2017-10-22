@@ -18,9 +18,11 @@ import subprocess
 import traceback
 import signal
 import re
+import configparser
 
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 CONFIG_FILE = '.config/cosycar.cfg'
+HTTP_PORT = 8085
 
 def init_test_cases():
     test_cases = [TestGivenTimeToLeave()]
@@ -56,15 +58,15 @@ class TestGivenTimeToLeave():
 def main():
     test_cases = init_test_cases()
     for test_case in test_cases:
-        process = setup()
+        setup()
         try:
             test_case.run()
         except TestFailure as e:
-            teardown(process)
+            teardown()
             error_text = 'Test case: "{}" failed!'
             raise TestFailure(error_text.format(test_case.name)) from e
         except Exception:
-            teardown(process)
+            teardown()
             raise Exception(traceback.format_exc())
 
 
@@ -74,19 +76,32 @@ def setup():
     except:
         pass
     process = subprocess.Popen(
-        ['tests/reflect.py', '-p 8085'],
+        ['tests/reflect.py', '-p {}'.format(HTTP_PORT)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE)
+    SetupParams.reflect_process = process
     home_dir = os.environ['HOME']
     cfg_file = os.path.join(home_dir, CONFIG_FILE)
-    here we should modify the zwave host ip in the config file
-    return process
+    config = configparser.ConfigParser()
+    config.read(cfg_file)
+    ip_address = config['ZWAVE_CONTROLLER']['ip_address']
+    port = config['ZWAVE_CONTROLLER']['port']
+    SetupParams.ip_address = ip_address
+    SetupParams.port = port
+    now modify the above...
 
 
-def teardown(process):
-    os.kill(process.pid, signal.SIGTERM)
+
+def teardown():
+    os.kill(SetupParams.reflect_process.pid, signal.SIGTERM)
 
 
+class SetupParams():
+    reflect_process = None
+    ip_address = None
+    port = None
+
+    
 class Heater():
     def __init__(self, zwave_id, start_time, stop_time):
         self.zwave_id = zwave_id
