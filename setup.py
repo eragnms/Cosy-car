@@ -45,5 +45,7 @@ setup(
     install_requires=[
         '',
     ],
+    data_files=[(os.environ['HOME'] + '/.config',
+                 ['cosycar/config/cosycar.cfg'])],
 )
 

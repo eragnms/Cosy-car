@@ -19,8 +19,8 @@ import traceback
 import signal
 import re
 
-HTTP_LOG_FILE = 'tests/data/http_log_file.log'
-
+HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
+CONFIG_FILE = '.config/cosycar.cfg'
 
 def init_test_cases():
     test_cases = [TestGivenTimeToLeave()]
@@ -48,7 +48,7 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar >/dev/null 2>&1')
+        os.system('cosycar --time-to-leave-in 35 >/dev/null 2>&1')
         test_engine = TestEngine(self)
         test_engine.run()
 
@@ -77,6 +77,9 @@ def setup():
         ['tests/reflect.py', '-p 8085'],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE)
+    home_dir = os.environ['HOME']
+    cfg_file = os.path.join(home_dir, CONFIG_FILE)
+    here we should modify the zwave host ip in the config file
     return process
 
 
@@ -128,7 +131,7 @@ class TestEngine():
         next_cosycar_check = now
         while now < self._test_case.total_time_to_run:
             if now >= next_cosycar_check:
-                os.system('cosycar >/dev/null 2>&1')
+                os.system('cosycar --check >/dev/null 2>&1')
                 self._check_heater_statuses(now)
                 next_cosycar_check += self._test_case.cosycar_check_period
             now = time.time() - test_case_start_time

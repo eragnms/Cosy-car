@@ -7,7 +7,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 import argparse
 
 DEFAULT_PORT = 8080
-HTTP_LOG_FILE = 'tests/data/http_log_file.log'
+HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 SEND_RESPONSE = False
 
 
