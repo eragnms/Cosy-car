@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-To add a new test case, write a class TestSomething and add it to the
-list of test cases in init_test_cases.
+To add a new test case, write a class "TestSomething" and add it to the
+list "test_cases" in the function "init_test_cases".
 """
-
-# On = http://$ip_address:3480/data_request?id=action&output_format
-# =xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPowe
-# r1&action=SetTarget&newTargetValue=1
-# Off = http://$ip_address:3480/data_request?id=action&output_forma
-# t=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPow
-# er1&action=SetTarget&newTargetValue=0
-
 import os
 import time
 import subprocess
@@ -23,6 +15,7 @@ import configparser
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 CONFIG_FILE = '.config/cosycar.cfg'
 HTTP_PORT = 8085
+SECONDS_PER_MINUTE = 60
 
 
 def init_test_cases():
@@ -32,14 +25,14 @@ def init_test_cases():
 
 class TestGivenTimeToLeave():
     name = 'Given time to leave'
-    comp_heater_zwave_id = 11
-    block_heater_zwave_id = 10
-    total_time_to_run = 20
-    cosycar_check_period = 2
-    block_heater_expected_start_time = 5
-    block_heater_expected_stop_time = 20
-    comp_heater_expected_start_time = 15
-    comp_heater_expected_stop_time = 20
+    block_heater_zwave_id = 21
+    comp_heater_zwave_id = 14
+    total_time_to_run = 50 * SECONDS_PER_MINUTE
+    cosycar_check_period = 2 * SECONDS_PER_MINUTE
+    block_heater_expected_start_time = 5 * SECONDS_PER_MINUTE
+    block_heater_expected_stop_time = 45 * SECONDS_PER_MINUTE
+    comp_heater_expected_start_time = 20 * SECONDS_PER_MINUTE
+    comp_heater_expected_stop_time = 45 * SECONDS_PER_MINUTE
 
     def __init__(self):
         block_heater = Heater(self.block_heater_zwave_id,
@@ -172,8 +165,6 @@ class Heater():
 
 
 class TestEngine():
-    _cosycar_check_period = 2
-
     def __init__(self, test_case):
         self._test_case = test_case
 
