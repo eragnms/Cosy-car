@@ -24,6 +24,7 @@ HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 CONFIG_FILE = '.config/cosycar.cfg'
 HTTP_PORT = 8085
 
+
 def init_test_cases():
     test_cases = [TestGivenTimeToLeave()]
     return test_cases
@@ -71,37 +72,74 @@ def main():
 
 
 def setup():
-    try:
-        os.remove(HTTP_LOG_FILE)
-    except:
-        pass
+    remove_http_log_file()
+    start_http_listen_process()
+    modify_cfg_file_for_testing()
+
+
+def teardown():
+    kill_http_listen_process()
+    restore_cfg_file()
+    remove_http_log_file()
+
+
+def start_http_listen_process():
     process = subprocess.Popen(
         ['tests/reflect.py', '-p {}'.format(HTTP_PORT)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE)
     SetupParams.reflect_process = process
+
+
+def modify_cfg_file_for_testing():
     home_dir = os.environ['HOME']
     cfg_file = os.path.join(home_dir, CONFIG_FILE)
+    config = save_current_cfg_file_settings(cfg_file)
+    config['ZWAVE_CONTROLLER']['ip_address'] = 'localhost'
+    config['ZWAVE_CONTROLLER']['port'] = str(HTTP_PORT)
+    with open(cfg_file, 'w') as configfile:
+        config.write(configfile)
+
+
+def save_current_cfg_file_settings(cfg_file):
     config = configparser.ConfigParser()
     config.read(cfg_file)
     ip_address = config['ZWAVE_CONTROLLER']['ip_address']
     port = config['ZWAVE_CONTROLLER']['port']
+    SetupParams.cfg_file = cfg_file
     SetupParams.ip_address = ip_address
     SetupParams.port = port
-    now modify the above...
+    return config
 
 
-
-def teardown():
+def kill_http_listen_process():
     os.kill(SetupParams.reflect_process.pid, signal.SIGTERM)
 
 
+def restore_cfg_file():
+    config = configparser.ConfigParser()
+    cfg_file = SetupParams.cfg_file
+    config.read(cfg_file)
+    config['ZWAVE_CONTROLLER']['ip_address'] = str(SetupParams.ip_address)
+    config['ZWAVE_CONTROLLER']['port'] = str(SetupParams.port)
+    with open(cfg_file, 'w') as configfile:
+        config.write(configfile)
+
+
+def remove_http_log_file():
+    try:
+        os.remove(HTTP_LOG_FILE)
+    except:
+        pass
+
+
 class SetupParams():
+    cfg_file = None
     reflect_process = None
     ip_address = None
     port = None
 
-    
+
 class Heater():
     def __init__(self, zwave_id, start_time, stop_time):
         self.zwave_id = zwave_id
@@ -116,10 +154,9 @@ class Heater():
         if current_status != expected_status:
             error_text = 'Heater with id {} is {}, but is expected to be {}'
             error_text += ', time is now {}'
-            raise TestFailure(error_text.format(self.zwave_id,
-                                                current_status,
-                                                expected_status,
-                                                now))
+            raise TestFailure(
+                error_text.format(self.zwave_id, current_status,
+                                  expected_status, now))
 
     def _decode_status(self, status):
         if status:

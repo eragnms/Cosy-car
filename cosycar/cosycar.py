@@ -4,6 +4,14 @@ from .calendar_events import CalendarEvents
 from pkg_resources import Requirement, resource_filename
 import os
 
+# On = http://$ip_address:3480/data_request?id=action&output_format
+# =xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPowe
+# r1&action=SetTarget&newTargetValue=1
+# Off = http://$ip_address:3480/data_request?id=action&output_forma
+# t=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPow
+# er1&action=SetTarget&newTargetValue=0
+
+
 # Version numbering scheme, see
 # https://packaging.python.org/distributing/#choosing-a-versioning-scheme
 # 1.2.0.dev1  # Development release
