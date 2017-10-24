@@ -15,7 +15,7 @@ import configparser
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 CONFIG_FILE = '.config/cosycar.cfg'
 HTTP_PORT = 8085
-SECONDS_PER_MINUTE = 60
+SECONDS_PER_MINUTE = 6
 
 
 def init_test_cases():
