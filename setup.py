@@ -46,6 +46,6 @@ setup(
         '',
     ],
     data_files=[(os.environ['HOME'] + '/.config',
-                 ['cosycar/config/cosycar.cfg'])],
+                 ['cosycar/config/cosycar_template.cfg'])],
 )
 
