@@ -15,7 +15,7 @@ or with
 Install the script with (cd into the root of the project):
 
   $ pip install .
-  $ cp ~/.config/cosycar_template.cfg ~//
+  $ cp ~/.config/cosycar_template.cfg ~/.config/cosycar.cfg
 
 After installation of the script it can be invoked with:
 
