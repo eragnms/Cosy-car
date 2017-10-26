@@ -11,9 +11,10 @@ from cosycar.car import Car
 
 class CarTests(unittest.TestCase):
     def setUp(self):
-        logging.basicConfig(filename='tests/data/cosycar.log',
-                            level='DEBUG',
-                            format=Constants.log_format)
+        logging.basicConfig(
+            filename='tests/data/cosycar.log',
+            level='DEBUG',
+            format=Constants.log_format)
 
     def tearDown(self):
         pass
@@ -27,8 +28,9 @@ class CarTests(unittest.TestCase):
         with patch('builtins.open', m, create=True):
             car.leave_in(leave_in_minutes)
         handle = m()
-        ans = leave_in_date.strftime('%Y-%m-%d,%H:%M')
+        ans = leave_in_date.strftime('%Y,%m,%d,%H,%M')
         handle.write.assert_called_once_with(ans)
-        
+
+
 if __name__ == '__main__':
     unittest.main()

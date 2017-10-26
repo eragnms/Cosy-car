@@ -37,7 +37,7 @@ def main():
     description_text = "Cosycar, the script that keeps your car cosy"
     parser = argparse.ArgumentParser(description=description_text)
     parser.add_argument("-c",
-                        "--check",
+                        "--check_heaters",
                         help="check if any heaters should run",
                         action="store_true")
     parser.add_argument("-l",
@@ -46,7 +46,8 @@ def main():
                         type=int)
     args = parser.parse_args()
     if args.check:
-        print('check')
+        car = Car()
+        car.check_heaters()
     elif args.leave_in:
         car = Car()
         car.leave_in(args.leave_in)
