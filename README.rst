@@ -3,6 +3,9 @@ Cosycar
 
 Helps keep your car cosy during cold days...
 
+Install and run
+================
+
 The script can be invoked by:
 - cd into the directory /cosycar and execute
 
