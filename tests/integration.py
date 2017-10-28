@@ -13,9 +13,9 @@ import re
 import configparser
 
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
-CONFIG_FILE = '.config/cosycar.cfg'
+CONFIG_FILE = '.config/cosycar_template.cfg'
 HTTP_PORT = 8085
-SECONDS_PER_MINUTE = 6
+SECONDS_PER_MINUTE = 2
 
 
 def init_test_cases():
@@ -44,7 +44,7 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar --time-to-leave-in 35 >/dev/null 2>&1')
+        os.system('cosycar --leave-in 35 >/dev/null 2>&1')
         test_engine = TestEngine(self)
         test_engine.run()
 
@@ -174,7 +174,7 @@ class TestEngine():
         next_cosycar_check = now
         while now < self._test_case.total_time_to_run:
             if now >= next_cosycar_check:
-                os.system('cosycar --check >/dev/null 2>&1')
+                os.system('cosycar --check_heaters >/dev/null 2>&1')
                 self._check_heater_statuses(now)
                 next_cosycar_check += self._test_case.cosycar_check_period
             now = time.time() - test_case_start_time

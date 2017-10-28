@@ -12,14 +12,28 @@ or with
 
   $ ./cosycar-runner.py
 
-Install the script with either (cd into the root of the project):
-
-  $ pip install -e .
-
-or
+Install the script with (cd into the root of the project):
 
   $ pip install .
+  $ cp ~/.config/cosycar_template.cfg ~/.config/cosycar.cfg
 
 After installation of the script it can be invoked with:
 
   $ cosycar
+
+Docker
+========
+
+Build the container (cd into the root of the project):
+
+  $ docker build -t cosycar .
+
+Run integration test:
+
+  $ docker run cosycar integration
+
+Run cosycar:
+
+  $ docker run cosycar [params]
+
+
