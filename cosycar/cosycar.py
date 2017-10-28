@@ -26,7 +26,7 @@ from cosycar.car import Car
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev12'
+__version__ = '0.0.1.dev13'
 
 
 def main():

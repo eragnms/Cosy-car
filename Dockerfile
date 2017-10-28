@@ -1,10 +1,11 @@
 FROM python:3
 WORKDIR /usr/src/app
 COPY . .
-COPY tests/integration.py ./
+#RUN mkdir tests
+#COPY tests/integration.py ./tests
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir .
-CMD ["./integration.py"]
+ENTRYPOINT ["./docker-entrypoint"]
 
 
 #init:
