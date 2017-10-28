@@ -1,10 +1,10 @@
 FROM python:3
 WORKDIR /usr/src/app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
+COPY tests/integration.py ./
+RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir .
-CMD ["python", "/tests/cosycar_integaration.py"]
+CMD ["./integration.py"]
 
 
 #init:

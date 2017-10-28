@@ -26,7 +26,7 @@ from cosycar.car import Car
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev11'
+__version__ = '0.0.1.dev12'
 
 
 def main():
@@ -45,7 +45,7 @@ def main():
                         help="leave in LEAVE_IN minutes",
                         type=int)
     args = parser.parse_args()
-    if args.check:
+    if args.check_heaters:
         car = Car()
         car.check_heaters()
     elif args.leave_in:
