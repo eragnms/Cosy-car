@@ -3,6 +3,7 @@
 """
 To add a new test case, write a class "TestSomething" and add it to the
 list "test_cases" in the function "init_test_cases".
+NOTE! All times in this script is in seconds.
 """
 import os
 import time
@@ -15,7 +16,10 @@ import configparser
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 CONFIG_FILE = '.config/cosycar_template.cfg'
 HTTP_PORT = 8085
-SECONDS_PER_MINUTE = 2
+# SECONDS_PER_MINUTE can beused to shorten the execution time of the tests.
+# For example by setting the value to 60/30 the total execution time of the
+# tests will be 30 times faster.
+SECONDS_PER_MINUTE = 60 / 30
 
 
 def init_test_cases():
@@ -27,6 +31,7 @@ class TestGivenTimeToLeave():
     name = 'Given time to leave'
     block_heater_zwave_id = 21
     comp_heater_zwave_id = 14
+    leave_in = 35 * SECONDS_PER_MINUTE
     total_time_to_run = 50 * SECONDS_PER_MINUTE
     cosycar_check_period = 2 * SECONDS_PER_MINUTE
     block_heater_expected_start_time = 5 * SECONDS_PER_MINUTE
@@ -44,7 +49,7 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar --leave-in 35 >/dev/null 2>&1')
+        os.system('cosycar --leave-in {} >/dev/null 2>&1'.format(self.leave_in))
         test_engine = TestEngine(self)
         test_engine.run()
 
