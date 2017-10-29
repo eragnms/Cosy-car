@@ -44,6 +44,11 @@ def main():
                         "--leave_in",
                         help="leave in LEAVE_IN minutes",
                         type=int)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-v",
+                       "--version",
+                       help="print version information",
+                       action="store_true")
     args = parser.parse_args()
     if args.check_heaters:
         car = Car()
@@ -51,6 +56,8 @@ def main():
     elif args.leave_in:
         car = Car()
         car.leave_in(args.leave_in)
+    elif args.version:
+        print('This is cosycar version: {}'.format(__version__))
     else:
         parser.print_usage()
 

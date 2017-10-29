@@ -51,7 +51,7 @@ class EventsTest(unittest.TestCase):
         self.assertIsNone(next_event)
 
     def test_running_on_overtime(self):
-        """ Should run for a while on overtime """
+        """ Should run for a while on overtime. """
         car = Car()
         leaving_in = -2
         car.leave_in(leaving_in)

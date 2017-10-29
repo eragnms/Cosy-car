@@ -19,6 +19,7 @@ class Car():
         events = Events()
         minutes_to_next_event = events.fetch_next_event()
         # should any heaters be running
+        continue here, with should any heaters be running
         # switch heaters
         pass
         
