@@ -9,9 +9,8 @@ import logging
 from cosycar.constants import Constants
 from cosycar.car import Car
 
-# On = http://$ip_address:3480/data_request?id=action&output_format
-# =xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPowe
-# r1&action=SetTarget&newTargetValue=1
+from cosycar.sections import Sections
+
 # Off = http://$ip_address:3480/data_request?id=action&output_forma
 # t=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPow
 # er1&action=SetTarget&newTargetValue=0
@@ -49,6 +48,10 @@ def main():
                        "--version",
                        help="print version information",
                        action="store_true")
+    group.add_argument("-t",
+                       "--test",
+                       help="various tests",
+                       action="store_true")
     args = parser.parse_args()
     if args.check_heaters:
         car = Car()
@@ -56,6 +59,9 @@ def main():
     elif args.leave_in:
         car = Car()
         car.leave_in(args.leave_in)
+    elif args.test:
+        sections = Sections()
+        sections.switch_on(10)
     elif args.version:
         print('This is cosycar version: {}'.format(__version__))
     else:
