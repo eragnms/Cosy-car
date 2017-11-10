@@ -73,6 +73,9 @@ class Sections():
         config = configparser.ConfigParser()
         config.read(Constants.cfg_file)
         return config
+
+    def _upcoming_event(self, minutes_to_next_event):
+        return minutes_to_next_event is not None
     
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
@@ -85,12 +88,13 @@ class Engine(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
 
     def set_heater_state(self, minutes_to_next_event):
-        time_to_run = self._required_energy / self.heater_power
-        minutes_to_run = time_to_run * 60
-        if minutes_to_run >= minutes_to_next_event:
-            self.switch_on(self.heater_zwave_id)
-        else:
-            self.switch_off(self.heater_zwave_id)
+        if self._upcoming_event(minutes_to_next_event):
+            time_to_run = self._required_energy / self.heater_power
+            minutes_to_run = time_to_run * 60
+            if minutes_to_run >= minutes_to_next_event:
+                self.switch_on(self.heater_zwave_id)
+            else:
+                self.switch_off(self.heater_zwave_id)
         
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
@@ -102,12 +106,7 @@ class Compartment(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
         
     def set_heater_state(self, minutes_to_next_event):
-        time_to_run = self._required_energy / self.heater_power
-        minutes_to_run = time_to_run * 60
-        if minutes_to_run >= minutes_to_next_event:
-            self.switch_on(self.heater_zwave_id)
-        else:
-            self.switch_off(self.heater_zwave_id)
+        pass
         
 class Windscreen(Sections):
     _section_name = 'SECTION_WINDSCREEN'
@@ -119,9 +118,4 @@ class Windscreen(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
         
     def set_heater_state(self, minutes_to_next_event):
-        time_to_run = self._required_energy / self.heater_power
-        minutes_to_run = time_to_run * 60
-        if minutes_to_run >= minutes_to_next_event:
-            self.switch_on(self.heater_zwave_id)
-        else:
-            self.switch_off(self.heater_zwave_id)
+        pass
