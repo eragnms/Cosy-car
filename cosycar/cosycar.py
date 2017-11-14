@@ -28,6 +28,13 @@ from cosycar.sections import Sections
 __version__ = '0.0.1.dev13'
 
 
+# Use pyvera
+# >>> devices[12]
+# VeraSwitch (id=21 category=On/Off Switch name=Vägguttag ute, värmare)
+# >>> devices[10]
+# VeraSwitch (id=14 category=On/Off Switch name=Kupé IP44-brytare)
+
+
 def main():
     logging.basicConfig(filename='/tmp/should_be_elsewhere.log',
                         level='DEBUG',
@@ -61,7 +68,7 @@ def main():
         car.leave_in(args.leave_in)
     elif args.test:
         sections = Sections()
-        sections.switch_on(10)
+        sections.switch_off(10)
     elif args.version:
         print('This is cosycar version: {}'.format(__version__))
     else:

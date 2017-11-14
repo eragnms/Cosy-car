@@ -5,6 +5,7 @@ import urllib.request
 import configparser
 
 from cosycar.constants import Constants
+from cosycar.zwave import Switch
 
 log = logging.getLogger(__name__)
 
