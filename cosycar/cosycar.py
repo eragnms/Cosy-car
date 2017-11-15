@@ -9,7 +9,7 @@ import logging
 from cosycar.constants import Constants
 from cosycar.car import Car
 
-from cosycar.sections import Sections
+from cosycar.zwave import Switch 
 
 # Off = http://$ip_address:3480/data_request?id=action&output_forma
 # t=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPow
@@ -67,8 +67,9 @@ def main():
         car = Car()
         car.leave_in(args.leave_in)
     elif args.test:
-        sections = Sections()
-        sections.switch_off(10)
+        # Just for tests...
+        switch = Switch(4)
+        switch.turn_off()
     elif args.version:
         print('This is cosycar version: {}'.format(__version__))
     else:

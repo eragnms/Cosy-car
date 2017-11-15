@@ -10,11 +10,6 @@ from cosycar.zwave import Switch
 log = logging.getLogger(__name__)
 
 class Sections():
-    def __init__(self):
-        config = self._read_config()
-        self.ip_address = config.get('ZWAVE_CONTROLLER', 'ip_address')
-        self.port = config.get('ZWAVE_CONTROLLER', 'port')
-
     def available_sections(self):
         available_sections = [Engine(),
                               Compartment(),
@@ -44,21 +39,6 @@ class Sections():
             return config.getint(heater_section, 'zwave_id')
         else:
             return None
-
-    def switch_on(self, zwave_id):
-        self._switch(zwave_id, 1)
-
-    def switch_off(self, zwave_id):
-        self._switch(zwave_id, 0)
-
-    def _switch(self, zwave_id, on_off):
-        switch_command = 'http://{}:{}'.format(self.ip_address, self.port)
-        switch_command += '/data_request?id=action&output_format=xml&Devic'
-        switch_command += 'eNum={}'.format(zwave_id)
-        switch_command += '&serviceId=urn:upnp-org:serviceId:SwitchPower1'
-        switch_command += '&action=SetTarget&newTargetValue={}'.format(on_off)
-        print(switch_command)
-        r = urllib.request.Request(switch_command)
 
     def _find_heater_section(self, heater_name):
         config = self._read_config()
@@ -92,10 +72,11 @@ class Engine(Sections):
         if self._upcoming_event(minutes_to_next_event):
             time_to_run = self._required_energy / self.heater_power
             minutes_to_run = time_to_run * 60
+            switch = Switch(self.heater_zwave_id)
             if minutes_to_run >= minutes_to_next_event:
-                self.switch_on(self.heater_zwave_id)
+                switch.turn_on()
             else:
-                self.switch_off(self.heater_zwave_id)
+                switch.turn_off()
         
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'

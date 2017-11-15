@@ -31,6 +31,6 @@ class CarTests(unittest.TestCase):
         ans = leave_in_date.strftime('%Y,%m,%d,%H,%M')
         handle.write.assert_called_once_with(ans)
 
-        
+
 if __name__ == '__main__':
     unittest.main()
