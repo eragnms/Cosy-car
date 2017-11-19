@@ -3,6 +3,7 @@
 """
 To add a new test case, write a class "TestSomething" and add it to the
 list "test_cases" in the function "init_test_cases".
+NOTE! All times in this script is in seconds.
 """
 import os
 import time
@@ -11,11 +12,17 @@ import traceback
 import signal
 import re
 import configparser
+import shutil
 
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
-CONFIG_FILE = '.config/cosycar_template.cfg'
+CONFIG_FILE_TEMPLATE = '.config/cosycar_template.cfg'
+CONFIG_FILE = '.config/cosycar.cfg'
+CONFIG_FILE_BKP = '.config/cosycar.cfg_bkp'
 HTTP_PORT = 8085
-SECONDS_PER_MINUTE = 2
+# SECONDS_PER_MINUTE can be used to shorten the execution time of the
+# tests. For example by setting the value to 60/30 the total execution
+# time of the tests will be 30 times faster.
+SECONDS_PER_MINUTE = 60 / 30
 
 
 def init_test_cases():
@@ -27,6 +34,7 @@ class TestGivenTimeToLeave():
     name = 'Given time to leave'
     block_heater_zwave_id = 21
     comp_heater_zwave_id = 14
+    leave_in = 35 * SECONDS_PER_MINUTE
     total_time_to_run = 50 * SECONDS_PER_MINUTE
     cosycar_check_period = 2 * SECONDS_PER_MINUTE
     block_heater_expected_start_time = 5 * SECONDS_PER_MINUTE
@@ -44,7 +52,7 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar --leave-in 35 >/dev/null 2>&1')
+        os.system('cosycar --leave-in {} >/dev/null 2>&1'.format(self.leave_in))
         test_engine = TestEngine(self)
         test_engine.run()
 
@@ -65,7 +73,8 @@ def main():
 
 
 def setup():
-    remove_http_log_file()
+    clean_up_files()
+    install_integration_cfg_file()
     start_http_listen_process()
     modify_cfg_file_for_testing()
 
@@ -73,8 +82,18 @@ def setup():
 def teardown():
     kill_http_listen_process()
     restore_cfg_file()
-    remove_http_log_file()
+    clean_up_files()
 
+def install_integration_cfg_file():
+    home_dir = os.environ['HOME']
+    cfg_file_template = os.path.join(home_dir, CONFIG_FILE_TEMPLATE)
+    cfg_file_bkp = os.path.join(home_dir, CONFIG_FILE_BKP)
+    cfg_file = os.path.join(home_dir, CONFIG_FILE)
+    try:
+        shutil.copyfile(cfg_file, cfg_file_bkp)
+    except:
+        pass
+    shutil.copyfile(cfg_file_template, cfg_file)
 
 def start_http_listen_process():
     process = subprocess.Popen(
@@ -108,7 +127,7 @@ def save_current_cfg_file_settings(cfg_file):
 def kill_http_listen_process():
     os.kill(SetupParams.reflect_process.pid, signal.SIGTERM)
 
-
+    
 def restore_cfg_file():
     config = configparser.ConfigParser()
     cfg_file = SetupParams.cfg_file
@@ -119,9 +138,13 @@ def restore_cfg_file():
         config.write(configfile)
 
 
-def remove_http_log_file():
+def clean_up_files():
     try:
-        os.remove(HTTP_LOG_FILE)
+        #os.remove(HTTP_LOG_FILE)
+        home_dir = os.environ['HOME']
+        cfg_file = os.path.join(home_dir, CONFIG_FILE)
+        cfg_file_bkp = os.path.join(home_dir, CONFIG_FILE_BKP)
+        shutil.copyfile(cfg_file_bkp, cfg_file)
     except:
         pass
 

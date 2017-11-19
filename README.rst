@@ -3,6 +3,9 @@ Cosycar
 
 Helps keep your car cosy during cold days...
 
+Install and run
+================
+
 The script can be invoked by:
 - cd into the directory /cosycar and execute
 
@@ -14,12 +17,12 @@ or with
 
 Install the script with (cd into the root of the project):
 
-  $ pip install .
+  $ pip install --user .
   $ cp ~/.config/cosycar_template.cfg ~/.config/cosycar.cfg
 
 After installation of the script it can be invoked with:
 
-  $ cosycar
+  $ $HOME/.local/bin/cosycar
 
 Docker
 ========

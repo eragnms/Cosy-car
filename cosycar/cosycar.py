@@ -9,9 +9,8 @@ import logging
 from cosycar.constants import Constants
 from cosycar.car import Car
 
-# On = http://$ip_address:3480/data_request?id=action&output_format
-# =xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPowe
-# r1&action=SetTarget&newTargetValue=1
+from cosycar.zwave import Switch 
+
 # Off = http://$ip_address:3480/data_request?id=action&output_forma
 # t=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPow
 # er1&action=SetTarget&newTargetValue=0
@@ -26,7 +25,14 @@ from cosycar.car import Car
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev13'
+__version__ = '0.0.1.dev14'
+
+
+# Use pyvera
+# >>> devices[12]
+# VeraSwitch (id=21 category=On/Off Switch name=Vägguttag ute, värmare)
+# >>> devices[10]
+# VeraSwitch (id=14 category=On/Off Switch name=Kupé IP44-brytare)
 
 
 def main():
@@ -44,6 +50,15 @@ def main():
                         "--leave_in",
                         help="leave in LEAVE_IN minutes",
                         type=int)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-v",
+                       "--version",
+                       help="print version information",
+                       action="store_true")
+    group.add_argument("-t",
+                       "--test",
+                       help="various tests",
+                       action="store_true")
     args = parser.parse_args()
     if args.check_heaters:
         car = Car()
@@ -51,6 +66,12 @@ def main():
     elif args.leave_in:
         car = Car()
         car.leave_in(args.leave_in)
+    elif args.test:
+        # Just for tests...
+        switch = Switch(7)
+        switch.turn_off()
+    elif args.version:
+        print('This is cosycar version: {}'.format(__version__))
     else:
         parser.print_usage()
 
