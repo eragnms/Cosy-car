@@ -140,7 +140,7 @@ def restore_cfg_file():
 
 def clean_up_files():
     try:
-        os.remove(HTTP_LOG_FILE)
+        #os.remove(HTTP_LOG_FILE)
         home_dir = os.environ['HOME']
         cfg_file = os.path.join(home_dir, CONFIG_FILE)
         cfg_file_bkp = os.path.join(home_dir, CONFIG_FILE_BKP)
