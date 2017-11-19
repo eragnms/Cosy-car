@@ -1,0 +1,1 @@
+we need to add pyvera to the requirements and we should probably do like we do in the new template
