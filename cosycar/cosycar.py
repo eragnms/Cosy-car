@@ -25,7 +25,7 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev13'
+__version__ = '0.0.1.dev14'
 
 
 # Use pyvera
@@ -68,7 +68,7 @@ def main():
         car.leave_in(args.leave_in)
     elif args.test:
         # Just for tests...
-        switch = Switch(4)
+        switch = Switch(7)
         switch.turn_off()
     elif args.version:
         print('This is cosycar version: {}'.format(__version__))
