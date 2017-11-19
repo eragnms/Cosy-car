@@ -6,11 +6,12 @@ from unittest.mock import patch
 import configparser
 
 from cosycar.constants import Constants
-from cosycar.sections import Sections, Engine
+from cosycar.sections import Sections
 
 CFG_FILE = 'tests/data/cosycar_template.cfg'
 
-class CarTests(unittest.TestCase):
+
+class CarSectionTests(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(
             filename='tests/data/cosycar.log',
@@ -18,7 +19,7 @@ class CarTests(unittest.TestCase):
             format=Constants.log_format)
         self._config = configparser.ConfigParser()
         self._config.read(CFG_FILE)
-        
+
     def tearDown(self):
         pass
 
@@ -26,14 +27,14 @@ class CarTests(unittest.TestCase):
     def test_check_in_use(self, getboolean_mock):
         sections = Sections()
         section = 'SECTION_ENGINE'
-        in_use = sections.check_in_use(section)
+        sections.check_in_use(section)
         getboolean_mock.assert_any_call(section, 'in_use')
 
     @patch('configparser.ConfigParser.get')
     def test_get_heater_name(self, get_mock):
         sections = Sections()
         section = 'SECTION_ENGINE'
-        name = sections.get_heater_name(section)
+        sections.get_heater_name(section)
         get_mock.assert_any_call(section, 'heater')
 
     @patch('cosycar.sections.Sections._read_config')
@@ -76,42 +77,6 @@ class CarTests(unittest.TestCase):
         zwave_id = sections.get_heater_zwave_id(heater_name)
         self.assertIsNone(zwave_id)
 
-    @patch('cosycar.sections.Sections._read_config')
-    @patch('cosycar.sections.Sections.switch_on')
-    @patch('cosycar.sections.Sections.switch_off')
-    def test_set_heater_state_1(self, off_mock, on_mock, read_config_mock):
-        read_config_mock.return_value = self._config
-        engine = Engine()
-        engine.set_heater_state(20)
-        on_mock.assert_any_call(21)
 
-    @patch('cosycar.sections.Sections._read_config')
-    @patch('cosycar.sections.Sections.switch_on')
-    @patch('cosycar.sections.Sections.switch_off')
-    def test_set_heater_state_2(self, off_mock, on_mock, read_config_mock):
-        read_config_mock.return_value = self._config
-        engine = Engine()
-        engine.set_heater_state(30)
-        on_mock.assert_any_call(21)
-
-    @patch('cosycar.sections.Sections._read_config')
-    @patch('cosycar.sections.Sections.switch_on')
-    @patch('cosycar.sections.Sections.switch_off')
-    def test_set_heater_state_1(self, off_mock, on_mock, read_config_mock):
-        read_config_mock.return_value = self._config
-        engine = Engine()
-        engine.set_heater_state(31)
-        off_mock.assert_any_call(21)
-
-    @patch('cosycar.sections.Sections._read_config')
-    @patch('cosycar.sections.Sections.switch_on')
-    @patch('cosycar.sections.Sections.switch_off')
-    def test_set_heater_state_1(self, off_mock, on_mock, read_config_mock):
-        read_config_mock.return_value = self._config
-        engine = Engine()
-        engine.set_heater_state(-5)
-        on_mock.assert_any_call(21)
-    
-        
 if __name__ == '__main__':
     unittest.main()

@@ -19,9 +19,9 @@ CONFIG_FILE_TEMPLATE = '.config/cosycar_template.cfg'
 CONFIG_FILE = '.config/cosycar.cfg'
 CONFIG_FILE_BKP = '.config/cosycar.cfg_bkp'
 HTTP_PORT = 8085
-# SECONDS_PER_MINUTE can beused to shorten the execution time of the tests.
-# For example by setting the value to 60/30 the total execution time of the
-# tests will be 30 times faster.
+# SECONDS_PER_MINUTE can be used to shorten the execution time of the
+# tests. For example by setting the value to 60/30 the total execution
+# time of the tests will be 30 times faster.
 SECONDS_PER_MINUTE = 60 / 30
 
 
