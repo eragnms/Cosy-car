@@ -25,7 +25,7 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev14'
+__version__ = '0.0.1.dev15'
 
 
 # Use pyvera
@@ -40,6 +40,7 @@ def main():
                         level='DEBUG',
                         format=Constants.log_format)
     log = logging.getLogger(__name__)
+    log.debug("Cosycar: {}".format(__version__))
     description_text = "Cosycar, the script that keeps your car cosy"
     parser = argparse.ArgumentParser(description=description_text)
     parser.add_argument("-c",
