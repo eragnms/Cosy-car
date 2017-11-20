@@ -22,15 +22,15 @@ class Car():
             ttl_file.write(date_to_leave.strftime('%Y,%m,%d,%H,%M'))
 
     def check_heaters(self):
-        log.debug("Running check heaters")
         events = Events()
         minutes_to_next_event = events.fetch_next_event()
         if minutes_to_next_event:
             log_text = "Minutes to next event: {}"
-            log.debug(log_text.format(minutes_to_next_event))
             sections = Sections()
             available_sections = sections.available_sections()
+            log.debug("sections: {}".format(available_sections))
             for section in available_sections:
+                log.debug("section: {}".format(section))
                 section.set_heater_state(minutes_to_next_event)
         
         

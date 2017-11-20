@@ -52,7 +52,8 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar --leave-in {} >/dev/null 2>&1'.format(self.leave_in))
+        #os.system('cosycar --leave_in {} >/dev/null 2>&1'.format(self.leave_in))
+        os.system('cosycar --leave_in {}'.format(int(self.leave_in/60)))
         test_engine = TestEngine(self)
         test_engine.run()
 
