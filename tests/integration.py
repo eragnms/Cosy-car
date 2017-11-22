@@ -198,7 +198,8 @@ class TestEngine():
         next_cosycar_check = now
         while now < self._test_case.total_time_to_run:
             if now >= next_cosycar_check:
-                os.system('cosycar --check_heaters >/dev/null 2>&1')
+                #os.system('cosycar --check_heaters >/dev/null 2>&1')
+                os.system('cosycar --check_heaters')
                 self._check_heater_statuses(now)
                 next_cosycar_check += self._test_case.cosycar_check_period
             now = time.time() - test_case_start_time
