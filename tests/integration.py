@@ -53,7 +53,7 @@ class TestGivenTimeToLeave():
 
     def run(self):
         #os.system('cosycar --leave_in {} >/dev/null 2>&1'.format(self.leave_in))
-        os.system('cosycar --leave_in {}'.format(int(self.leave_in/60)))
+        os.system('cosycar --leave_in {}'.format(self.leave_in/60*SECONDS_PER_MINUTE))
         test_engine = TestEngine(self)
         test_engine.run()
 

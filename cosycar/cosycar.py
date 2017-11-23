@@ -25,7 +25,7 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev16'
+__version__ = '0.0.1.dev20'
 
 
 # Use pyvera
@@ -50,7 +50,7 @@ def main():
     parser.add_argument("-l",
                         "--leave_in",
                         help="leave in LEAVE_IN minutes",
-                        type=int)
+                        type=float)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v",
                        "--version",
