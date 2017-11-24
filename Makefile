@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 init:
 	source /home/mats/.virtualenvs/cosytest/bin/activate; \
+	mkdir -p ~/.config; \
 	pip install .
 
 unittest:
