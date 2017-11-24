@@ -27,6 +27,9 @@ from cosycar.zwave import Switch
 # 1.2.0.post1 # Post Release
 __version__ = '0.0.1.dev21'
 
+- If there is no .config folder the script will fail, ie mkdir such a dir at install in the Makefile
+- pyVera requires the server to reply with all devices there are, implement this in the reflect script
+
 
 # Use pyvera
 # >>> devices[12]
