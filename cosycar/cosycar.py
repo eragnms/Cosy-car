@@ -39,6 +39,7 @@ __version__ = '0.0.1.dev22'
 
 
 def main():
+    print("Running...")
     logging.basicConfig(filename='/tmp/should_be_elsewhere.log',
                         level='DEBUG',
                         format=Constants.log_format)
@@ -53,7 +54,7 @@ def main():
     parser.add_argument("-l",
                         "--leave_in",
                         help="leave in LEAVE_IN minutes",
-                        type=float)
+                        type=int)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v",
                        "--version",
