@@ -20,12 +20,12 @@ REFLECT_PORT = 8080
 ZWAVE_DEVICE_ID = 7
 
 def main():
-    vera()
+    #vera()
     #time.sleep(2)
-    #reflect()
+    reflect()
 
 def vera():
-    switch_device_vera_test(VERA_ADDRESS, VERA_PORT)
+    switch_device(VERA_ADDRESS, VERA_PORT)
     
 def reflect():
     switch_device_reflect_test(REFLECT_ADDRESS, REFLECT_PORT)
@@ -76,11 +76,23 @@ def get_devices(controller):
 def get_devices_test(base_url):
     request_url = base_url + "/data_request"
     payload = {'id': 'sdata'}
-    j = requests.get(request_url, timeout=30, params=payload).json()    
-    print(j)
-    we should make reflect return what is returned here in the j variable.
-    check what is to be returned for it to be treated as a json, or to be
-    able to treat it as a json structure.    
+    j = requests.get(request_url, timeout=30, params=payload).json() 
+    
+    categories = {}
+    cats = j.get('categories')
+    for cat in cats:
+        categories[cat.get('id')] = cat.get('name')
+
+    device_id_map = {}
+    devs = j.get('devices')
+    for dev in devs:
+        dev['categoryName'] = categories
+        device_id_map[dev.get('id')] = dev
+        
+    payload = {'id': 'status', 'output_format': 'json'}
+    j = requests.get(request_url, timeout=30, params=payload).json() 
+
+   
     
 if __name__ == "__main__":
     main()
