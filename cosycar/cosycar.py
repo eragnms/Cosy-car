@@ -39,7 +39,6 @@ __version__ = '0.0.1.dev22'
 
 
 def main():
-    print("Running...")
     logging.basicConfig(filename='/tmp/should_be_elsewhere.log',
                         level='DEBUG',
                         format=Constants.log_format)
