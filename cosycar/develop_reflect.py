@@ -6,36 +6,81 @@
 # be able to use the reflect script for integration tests.
 
 # Aim with the script is to get the functions "vera" and "reflect"
-# to printout similar results.
+# to printout similar results. This means that also the reflect
+# function should call the function switch_device.
 
 import pyvera
 import requests
+import time
 
 VERA_ADDRESS = "192.168.0.217"
-REFLECT_ADDRESS = "192.168.0.217"
+REFLECT_ADDRESS = "localhost"
 VERA_PORT = 3480
 REFLECT_PORT = 8080
+ZWAVE_DEVICE_ID = 7
+
+def main():
+    vera()
+    #time.sleep(2)
+    #reflect()
+
+def vera():
+    switch_device_vera_test(VERA_ADDRESS, VERA_PORT)
+    
+def reflect():
+    switch_device_reflect_test(REFLECT_ADDRESS, REFLECT_PORT)
+
+def switch_device_reflect_test(address, port):
+    controller_address = "http://{}:{}/".format(address, port)
+    controller = connect_to_controller(controller_address)
+    devices = get_devices(controller)
+    #mapping_id_to_ix = {}
+    #for index, value in enumerate(devices):
+    #    mapping_id_to_ix[value.device_id] = index
+    #index = mapping_id_to_ix[ZWAVE_DEVICE_ID]
+    #devices[index].switch_on()
+    #time.sleep(2)
+    #devices[index].switch_off()
+
+def switch_device_vera_test(address, port):
+    controller_address = "http://{}:{}/".format(address, port)
+    controller = connect_to_controller(controller_address)
+    devices = get_devices_test(controller_address)
+    #mapping_id_to_ix = {}
+    #for index, value in enumerate(devices):
+    #    mapping_id_to_ix[value.device_id] = index
+    #index = mapping_id_to_ix[ZWAVE_DEVICE_ID]
+    #devices[index].switch_on()
+    #time.sleep(2)
+    #devices[index].switch_off()
+    
+def switch_device(address, port):
+    controller_address = "http://{}:{}/".format(address, port)
+    controller = connect_to_controller(controller_address)
+    devices = get_devices(controller)
+    mapping_id_to_ix = {}
+    for index, value in enumerate(devices):
+        mapping_id_to_ix[value.device_id] = index
+    index = mapping_id_to_ix[ZWAVE_DEVICE_ID]
+    devices[index].switch_on()
+    time.sleep(2)
+    devices[index].switch_off()
 
 def connect_to_controller(address):
     controller = pyvera.VeraController(address)
     return controller
+
+def get_devices(controller):
+    return controller.get_devices('On/Off Switch')
     
-def get_devices(base_url):
+def get_devices_test(base_url):
     request_url = base_url + "/data_request"
     payload = {'id': 'sdata'}
     j = requests.get(request_url, timeout=30, params=payload).json()    
     print(j)
-
-def vera():
-    controller_address = "http://{}:{}/".format(VERA_ADDRESS, VERA_PORT)
-    controller = connect_to_controller(controller_address)
-    get_devices(controller_address)
+    we should make reflect return what is returned here in the j variable.
+    check what is to be returned for it to be treated as a json, or to be
+    able to treat it as a json structure.    
     
-def reflect():
-    pass
-
-def main():
-    vera()
-
 if __name__ == "__main__":
     main()
