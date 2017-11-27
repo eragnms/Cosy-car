@@ -25,7 +25,7 @@ def main():
     reflect()
 
 def vera():
-    switch_device(VERA_ADDRESS, VERA_PORT)
+    switch_device_vera_test(VERA_ADDRESS, VERA_PORT)
     
 def reflect():
     switch_device_reflect_test(REFLECT_ADDRESS, REFLECT_PORT)
@@ -34,6 +34,7 @@ def switch_device_reflect_test(address, port):
     controller_address = "http://{}:{}/".format(address, port)
     controller = connect_to_controller(controller_address)
     devices = get_devices(controller)
+    print(devices)
     #mapping_id_to_ix = {}
     #for index, value in enumerate(devices):
     #    mapping_id_to_ix[value.device_id] = index
@@ -45,14 +46,15 @@ def switch_device_reflect_test(address, port):
 def switch_device_vera_test(address, port):
     controller_address = "http://{}:{}/".format(address, port)
     controller = connect_to_controller(controller_address)
-    devices = get_devices_test(controller_address)
-    #mapping_id_to_ix = {}
-    #for index, value in enumerate(devices):
-    #    mapping_id_to_ix[value.device_id] = index
-    #index = mapping_id_to_ix[ZWAVE_DEVICE_ID]
-    #devices[index].switch_on()
-    #time.sleep(2)
-    #devices[index].switch_off()
+    devices = get_devices(controller)
+    print(devices)
+    mapping_id_to_ix = {}
+    for index, value in enumerate(devices):
+        mapping_id_to_ix[value.device_id] = index
+    index = mapping_id_to_ix[ZWAVE_DEVICE_ID]
+    devices[index].switch_on()
+    time.sleep(2)
+    devices[index].switch_off()
     
 def switch_device(address, port):
     controller_address = "http://{}:{}/".format(address, port)
