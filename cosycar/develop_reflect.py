@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+run simple_server_2.py and develop_reflect.py and you will at least see some results...
+
 # This script is written with the purpose of finding out what the
 # reflect script should respond on http requests from pyvera to good
 # enough mimic a vera controller. This is something we need to know to
@@ -29,12 +31,21 @@ def vera():
     
 def reflect():
     switch_device_reflect_test(REFLECT_ADDRESS, REFLECT_PORT)
-
+    #switch_device_reflect_test(VERA_ADDRESS, VERA_PORT)
+    
 def switch_device_reflect_test(address, port):
     controller_address = "http://{}:{}/".format(address, port)
     controller = connect_to_controller(controller_address)
-    devices = get_devices(controller)
-    print(devices)
+
+    controller.get_simple_devices_info()
+    print(controller.device_id_map)
+    
+    #devices = get_devices(controller)
+
+
+
+
+    #print(devices)
     #mapping_id_to_ix = {}
     #for index, value in enumerate(devices):
     #    mapping_id_to_ix[value.device_id] = index
@@ -94,7 +105,6 @@ def get_devices_test(base_url):
     payload = {'id': 'status', 'output_format': 'json'}
     j = requests.get(request_url, timeout=30, params=payload).json() 
 
-   
-    
+
 if __name__ == "__main__":
     main()
