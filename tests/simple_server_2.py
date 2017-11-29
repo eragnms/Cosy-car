@@ -16,7 +16,7 @@ class KodeFunHTTPRequestHandler(BaseHTTPRequestHandler):
       #if self.path.endswith('.html'):
       print(rootdir + self.path)
           #f = open(rootdir + self.path) #open requested file
-      f = open(rootdir + "/tmp.html") #open requested file
+      f = open(rootdir + "/tmp_short.html") #open requested file
 
           #send code 200 response
       self.send_response(200)

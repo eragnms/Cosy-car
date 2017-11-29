@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-run simple_server_2.py and develop_reflect.py and you will at least see some results...
-
 # This script is written with the purpose of finding out what the
 # reflect script should respond on http requests from pyvera to good
 # enough mimic a vera controller. This is something we need to know to
