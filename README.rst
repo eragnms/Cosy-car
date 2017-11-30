@@ -24,6 +24,10 @@ After installation of the script it can be invoked with:
 
   $ $HOME/.local/bin/cosycar
 
+To install in a virtual env:
+
+  $ pip install .
+
 Docker
 ========
 

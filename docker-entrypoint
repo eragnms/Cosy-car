@@ -2,6 +2,7 @@
 
 if [ "$1" = 'integration' ];
 then
+    python -m unittest
     ./tests/integration.py
 else
     cosycar "$@"

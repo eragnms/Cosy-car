@@ -17,6 +17,7 @@ class Zwave():
         ip_address = config.get('ZWAVE_CONTROLLER', 'ip_address')
         port = config.get('ZWAVE_CONTROLLER', 'port')
         controller_address = "http://{}:{}/".format(ip_address, port)
+        log.debug("Controller: {}".format(controller_address))
         self._controller = pyvera.VeraController(controller_address)
         self._devices = self._controller.get_devices('On/Off Switch')
         self._mapping_id_to_ix = {}
@@ -33,7 +34,9 @@ class Switch(Zwave):
         super().__init__(zwave_id)
 
     def turn_on(self):
+        log.debug("Switching on: {}".format(self.zwave_id))
         self._devices[self._index].switch_on()
 
     def turn_off(self):
+        log.debug("Switching off: {}".format(self.zwave_id))
         self._devices[self._index].switch_off()

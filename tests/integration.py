@@ -13,6 +13,7 @@ import signal
 import re
 import configparser
 import shutil
+import logging
 
 HTTP_LOG_FILE = '/tmp/cosycar_http_log_file.log'
 CONFIG_FILE_TEMPLATE = '.config/cosycar_template.cfg'
@@ -24,6 +25,7 @@ HTTP_PORT = 8085
 # time of the tests will be 30 times faster.
 SECONDS_PER_MINUTE = 60 / 30
 
+log = logging.getLogger(__name__)
 
 def init_test_cases():
     test_cases = [TestGivenTimeToLeave()]
@@ -34,7 +36,7 @@ class TestGivenTimeToLeave():
     name = 'Given time to leave'
     block_heater_zwave_id = 21
     comp_heater_zwave_id = 14
-    leave_in = 35 * SECONDS_PER_MINUTE
+    leave_in = float(35 * SECONDS_PER_MINUTE)
     total_time_to_run = 50 * SECONDS_PER_MINUTE
     cosycar_check_period = 2 * SECONDS_PER_MINUTE
     block_heater_expected_start_time = 5 * SECONDS_PER_MINUTE
@@ -52,16 +54,23 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar --leave-in {} >/dev/null 2>&1'.format(self.leave_in))
+        os.system('cosycar --leave_in {} >/dev/null 2>&1'.format(self.leave_in))
+        log.debug("Cosycar leave in {}".format(self.leave_in/60))
         test_engine = TestEngine(self)
         test_engine.run()
 
 
 def main():
+    logging.basicConfig(fielname='/tmp/integration.log',
+                        level='DEBUG',
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    log.debug("Integration started...")
     test_cases = init_test_cases()
     for test_case in test_cases:
         setup()
+        log.debug("Setup done...")
         try:
+            log.debug("Will run {}".format(test_case.name))
             test_case.run()
         except TestFailure as e:
             teardown()
@@ -94,6 +103,7 @@ def install_integration_cfg_file():
     except:
         pass
     shutil.copyfile(cfg_file_template, cfg_file)
+
 
 def start_http_listen_process():
     process = subprocess.Popen(
@@ -198,6 +208,7 @@ class TestEngine():
         while now < self._test_case.total_time_to_run:
             if now >= next_cosycar_check:
                 os.system('cosycar --check_heaters >/dev/null 2>&1')
+                log.debug("Checking heaters...")
                 self._check_heater_statuses(now)
                 next_cosycar_check += self._test_case.cosycar_check_period
             now = time.time() - test_case_start_time

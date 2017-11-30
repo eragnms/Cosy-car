@@ -25,7 +25,10 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.1.dev14'
+__version__ = '0.0.1.dev22'
+
+#- If there is no .config folder the script will fail, ie mkdir such a dir at install in the Makefile
+#- pyVera requires the server to reply with all devices there are, implement this in the reflect script
 
 
 # Use pyvera
@@ -40,6 +43,7 @@ def main():
                         level='DEBUG',
                         format=Constants.log_format)
     log = logging.getLogger(__name__)
+    log.debug("Cosycar: {}".format(__version__))
     description_text = "Cosycar, the script that keeps your car cosy"
     parser = argparse.ArgumentParser(description=description_text)
     parser.add_argument("-c",
@@ -49,7 +53,7 @@ def main():
     parser.add_argument("-l",
                         "--leave_in",
                         help="leave in LEAVE_IN minutes",
-                        type=int)
+                        type=float)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v",
                        "--version",
