@@ -10,30 +10,27 @@ class KodeFunHTTPRequestHandler(BaseHTTPRequestHandler):
   
   #handle GET command
   def do_GET(self):
-    rootdir = '/home/mats/gitdev/cosycar/cosycar' #file location
+    rootdir = '/home/mats/gitdev/cosycar/tests' #file location
     try:
       print(self.path)
-      #if self.path.endswith('.html'):
-          #f = open(rootdir + self.path) #open requested file
-      f = open(rootdir + "/tmp_short.html") #open requested file
-
-          #send code 200 response
+      if self.path.endswith('sdata'):
+        f = open(rootdir + "/response_1.html") #open requested file
+      elif self.path.endswith('json'):
+        f = open(rootdir + "/response_1.html") #open requested file
+      elif self.path.endswith('status'):
+        f = open(rootdir + "/response_1.html") #open requested file
+      elif self.path.endswith('Value=1'):
+        f = open(rootdir + "/response_3.html") #open requested file
+      elif self.path.endswith('Value=0'):
+        f = open(rootdir + "/response_4.html") #open requested file
+      else:
+        f = open(rootdir + "/response_4.html") #open requested file
       self.send_response(200)
-
-          #send header first
       self.send_header('Content-type','text/html')
       self.end_headers()
-
-          #send file content to client
-        
       self.wfile.write(f.read().encode())
       f.close()
-      #self.wfile.write("<html><head><title>Title goes here.</title></head>".encode())
-      #self.wfile.write("<body><p>This is a test.</p>".encode())
-      #self.wfile.write("</body></html>".encode())
-      
       return
-      
     except IOError:
       self.send_error(404, 'file not found')
   
