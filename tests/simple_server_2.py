@@ -14,7 +14,6 @@ class KodeFunHTTPRequestHandler(BaseHTTPRequestHandler):
     try:
       print(self.path)
       #if self.path.endswith('.html'):
-      print(rootdir + self.path)
           #f = open(rootdir + self.path) #open requested file
       f = open(rootdir + "/tmp_short.html") #open requested file
 
@@ -22,16 +21,16 @@ class KodeFunHTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_response(200)
 
           #send header first
-      #self.send_header('Content-type','text/html')
-      #self.end_headers()
+      self.send_header('Content-type','text/html')
+      self.end_headers()
 
           #send file content to client
         
       self.wfile.write(f.read().encode())
       f.close()
-        #self.wfile.write("<html><head><title>Title goes here.</title></head>".encode())
-        #self.wfile.write("<body><p>This is a test.</p>".encode())
-        #self.wfile.write("</body></html>".encode())
+      #self.wfile.write("<html><head><title>Title goes here.</title></head>".encode())
+      #self.wfile.write("<body><p>This is a test.</p>".encode())
+      #self.wfile.write("</body></html>".encode())
       
       return
       
