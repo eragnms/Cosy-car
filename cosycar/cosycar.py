@@ -53,7 +53,7 @@ def main():
     parser.add_argument("-l",
                         "--leave_in",
                         help="leave in LEAVE_IN minutes",
-                        type=int)
+                        type=float)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v",
                        "--version",

@@ -36,7 +36,7 @@ class TestGivenTimeToLeave():
     name = 'Given time to leave'
     block_heater_zwave_id = 21
     comp_heater_zwave_id = 14
-    leave_in = int(35 * SECONDS_PER_MINUTE)
+    leave_in = float(35 * SECONDS_PER_MINUTE)
     total_time_to_run = 50 * SECONDS_PER_MINUTE
     cosycar_check_period = 2 * SECONDS_PER_MINUTE
     block_heater_expected_start_time = 5 * SECONDS_PER_MINUTE
@@ -54,9 +54,8 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        #os.system('cosycar --leave_in {} >/dev/null 2>&1'.format(self.leave_in))
-        log.debug("Cosycar leave in {}".format(self.leave_in))
-        os.system('cosycar --leave_in {}'.format(self.leave_in))
+        os.system('cosycar --leave_in {} >/dev/null 2>&1'.format(self.leave_in))
+        log.debug("Cosycar leave in {}".format(self.leave_in/60))
         test_engine = TestEngine(self)
         test_engine.run()
 
@@ -104,6 +103,7 @@ def install_integration_cfg_file():
     except:
         pass
     shutil.copyfile(cfg_file_template, cfg_file)
+
 
 def start_http_listen_process():
     process = subprocess.Popen(
@@ -207,9 +207,8 @@ class TestEngine():
         next_cosycar_check = now
         while now < self._test_case.total_time_to_run:
             if now >= next_cosycar_check:
-                #os.system('cosycar --check_heaters >/dev/null 2>&1')
+                os.system('cosycar --check_heaters >/dev/null 2>&1')
                 log.debug("Checking heaters...")
-                os.system('cosycar --check_heaters')
                 self._check_heater_statuses(now)
                 next_cosycar_check += self._test_case.cosycar_check_period
             now = time.time() - test_case_start_time
