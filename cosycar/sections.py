@@ -72,6 +72,7 @@ class Engine(Sections):
         log.debug("min to next event: {}".format(minutes_to_next_event))
         log.debug("upcoming event: {}".format(self._upcoming_event(minutes_to_next_event)))
         if self._upcoming_event(minutes_to_next_event):
+            log.debug("Upcoming event")
             time_to_run = self._required_energy / self.heater_power
             minutes_to_run = time_to_run * 60
             switch = Switch(self.heater_zwave_id)
@@ -80,6 +81,9 @@ class Engine(Sections):
                 switch.turn_on()
             else:
                 switch.turn_off()
+        else:
+            log.debug("No oupcoming event")
+            
         
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'

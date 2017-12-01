@@ -32,5 +32,21 @@ class CarTests(unittest.TestCase):
         handle.write.assert_called_once_with(ans)
 
 
+    def test_leave_in_seconds(self):
+        """ This one might fail when seconds wrap over to a
+        minute, while it get truncated away in the file, not
+        using a resultion higher than minutes """
+        car = Car()
+        now = datetime.datetime.now()
+        leave_in_seconds = 125
+        leave_in_date = now + datetime.timedelta(seconds=leave_in_seconds)
+        m = mock_open()
+        with patch('builtins.open', m, create=True):
+            car.leave_in_seconds(leave_in_seconds)
+        handle = m()
+        ans = leave_in_date.strftime('%Y,%m,%d,%H,%M')
+        handle.write.assert_called_once_with(ans)
+
+
 if __name__ == '__main__':
     unittest.main()

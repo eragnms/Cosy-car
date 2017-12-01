@@ -20,9 +20,13 @@ CONFIG_FILE_TEMPLATE = '.config/cosycar_template.cfg'
 CONFIG_FILE = '.config/cosycar.cfg'
 CONFIG_FILE_BKP = '.config/cosycar.cfg_bkp'
 HTTP_PORT = 8085
+# All time used in this file is in seconds, but to make things more
+# readable we use minutes in instance constants of test cases and
+# then convert them into seconds with SECONDS_PER_MINUTE.
 # SECONDS_PER_MINUTE can be used to shorten the execution time of the
 # tests. For example by setting the value to 60/30 the total execution
-# time of the tests will be 30 times faster.
+# time of the tests will be 30 times faster than when the "real" value
+# of 60 is used.
 SECONDS_PER_MINUTE = 60 / 30
 
 log = logging.getLogger(__name__)
@@ -36,7 +40,7 @@ class TestGivenTimeToLeave():
     name = 'Given time to leave'
     block_heater_zwave_id = 21
     comp_heater_zwave_id = 14
-    leave_in = float(35 * SECONDS_PER_MINUTE)
+    leave_in = 35 * SECONDS_PER_MINUTE
     total_time_to_run = 50 * SECONDS_PER_MINUTE
     cosycar_check_period = 2 * SECONDS_PER_MINUTE
     block_heater_expected_start_time = 5 * SECONDS_PER_MINUTE
@@ -54,17 +58,18 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        os.system('cosycar --leave_in {} >/dev/null 2>&1'.format(self.leave_in))
-        log.debug("Cosycar leave in {}".format(self.leave_in/60))
+        execute = 'cosycar --leave_in_seconds {} >/dev/null 2>&1'
+        os.system(execute.format(int(self.leave_in)))
+        log.debug("Cosycar leave in {} seconds".format(self.leave_in))
         test_engine = TestEngine(self)
         test_engine.run()
 
 
 def main():
-    logging.basicConfig(fielname='/tmp/integration.log',
+    logging.basicConfig(filename='/tmp/integration.log',
                         level='DEBUG',
                         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    log.debug("Integration started...")
+    log.debug("Integration started... 1")
     test_cases = init_test_cases()
     for test_case in test_cases:
         setup()
@@ -84,6 +89,7 @@ def main():
 def setup():
     clean_up_files()
     install_integration_cfg_file()
+    log.debug("Starting http process")
     start_http_listen_process()
     modify_cfg_file_for_testing()
 
@@ -106,12 +112,15 @@ def install_integration_cfg_file():
 
 
 def start_http_listen_process():
+    cmd = ['/home/mats/.virtualenvs/cosytest/bin/python',
+           'tests/reflect.py',
+           '-p {}'.format(HTTP_PORT)]
     process = subprocess.Popen(
-        ['tests/reflect.py', '-p {}'.format(HTTP_PORT)],
+        cmd,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
+        stderr=subprocess.PIPE,)
     SetupParams.reflect_process = process
-
+    log.debug("Started reflect: {}".format(process))
 
 def modify_cfg_file_for_testing():
     home_dir = os.environ['HOME']
