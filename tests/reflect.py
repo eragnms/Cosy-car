@@ -49,6 +49,8 @@ def main():
         port = args.port
     else:
         port = DEFAULT_PORT
+    with open(HTTP_LOG_FILE, 'a') as log_file:
+            log_file.write('Starting reflect on port: {}\n'.format(port))
     server = HTTPServer(('', port), RequestHandler)
     server.serve_forever()
 
