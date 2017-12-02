@@ -55,8 +55,6 @@ class Sections():
         config.read(Constants.cfg_file)
         return config
 
-    def _upcoming_event(self, minutes_to_next_event):
-        return minutes_to_next_event is not None
     
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
@@ -69,22 +67,21 @@ class Engine(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
 
     def set_heater_state(self, minutes_to_next_event):
+        log.debug("Engine set_heater_state")
         log.debug("min to next event: {}".format(minutes_to_next_event))
-        log.debug("upcoming event: {}".format(self._upcoming_event(minutes_to_next_event)))
-        if self._upcoming_event(minutes_to_next_event):
-            log.debug("Upcoming event")
-            time_to_run = self._required_energy / self.heater_power
-            minutes_to_run = time_to_run * 60
-            switch = Switch(self.heater_zwave_id)
-            log.debug("minutes_to_run: {}".format(minutes_to_run))
-            if minutes_to_run >= minutes_to_next_event:
-                switch.turn_on()
-            else:
-                switch.turn_off()
+        time_to_run = self._required_energy / self.heater_power
+        minutes_to_run = time_to_run * 60
+        log.debug("minutes_to_run: {}".format(minutes_to_run))
+        switch = Switch(self.heater_zwave_id)
+        log.debug("Checking for on/off")
+        if minutes_to_run >= minutes_to_next_event:
+            log.debug("Turn switch on")
+            switch.turn_on()
         else:
-            log.debug("No oupcoming event")
-            
-        
+            log.debug("Turn switch off")
+            switch.turn_off()
+
+
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
     def __init__(self):
@@ -95,6 +92,7 @@ class Compartment(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
         
     def set_heater_state(self, minutes_to_next_event):
+        log.debug("Compartment set_heater_state")
         pass
         
 class Windscreen(Sections):
@@ -107,4 +105,5 @@ class Windscreen(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
         
     def set_heater_state(self, minutes_to_next_event):
+        log.debug("Windscreen set_heater_state")
         pass

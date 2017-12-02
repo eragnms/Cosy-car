@@ -38,7 +38,7 @@ class Car():
             available_sections = sections.available_sections()
             #log.debug("sections: {}".format(available_sections))
             for section in available_sections:
-                log.debug("section: {}".format(section))
+                log.debug("Checking section: {}".format(section))
                 section.set_heater_state(minutes_to_next_event)
         
         

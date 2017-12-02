@@ -24,6 +24,7 @@ class Zwave():
         for index, value in enumerate(self._devices):
             self._mapping_id_to_ix[value.device_id] = index
         self._index = self._mapping_id_to_ix[self.zwave_id]
+        log.debug("ix: {}, id: {}".format(self._index, self.zwave_id))
 
     def get_mapping(self):
         return self._index

@@ -58,7 +58,8 @@ class TestGivenTimeToLeave():
         self.heaters = [block_heater, comp_heater]
 
     def run(self):
-        execute = 'cosycar --leave_in_seconds {} >/dev/null 2>&1'
+        #execute = 'cosycar --leave_in_seconds {} >/dev/null 2>&1'
+        execute = 'cosycar --leave_in_seconds {}'
         os.system(execute.format(int(self.leave_in)))
         log.debug("Cosycar leave in {} seconds".format(self.leave_in))
         test_engine = TestEngine(self)
@@ -183,9 +184,11 @@ class Heater():
         self.touched = False
 
     def check_status(self, now, is_actually_on_now):
+        log.debug("Checking heater status")
         is_expected_to_be_on = self._should_heater_be_on(now)
         current_status = self._decode_status(is_actually_on_now)
         expected_status = self._decode_status(is_expected_to_be_on)
+        log.debug("{}, {}".format(current_status, expected_status))
         if current_status != expected_status:
             error_text = 'Heater with id {} is {}, but is expected to be {}'
             error_text += ', time is now {}'
@@ -216,7 +219,8 @@ class TestEngine():
         next_cosycar_check = now
         while now < self._test_case.total_time_to_run:
             if now >= next_cosycar_check:
-                os.system('cosycar --check_heaters >/dev/null 2>&1')
+                #os.system('cosycar --check_heaters >/dev/null 2>&1')
+                os.system('cosycar --check_heaters')
                 log.debug("Checking heaters...")
                 self._check_heater_statuses(now)
                 next_cosycar_check += self._test_case.cosycar_check_period
@@ -237,9 +241,12 @@ class TestEngine():
             heater_statuses = {}
             with open(HTTP_LOG_FILE, 'r') as log_file:
                 for line in log_file:
+                    log.debug("Looking in HTTP log")
                     device_id = self._extract_device_id(line)
                     device_state = self._extract_device_state(line)
                     if device_id and device_state:
+                        log_text = "Found id: {} in state: {}"
+                        log.debug(log_text.format(device_id, device_state))
                         heater_statuses['device_id'] = device_state
         except (FileNotFoundError, FileExistsError):
             pass
