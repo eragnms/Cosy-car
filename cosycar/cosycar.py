@@ -48,6 +48,10 @@ def main():
                         "--leave_in_seconds",
                         help="leave in LEAVE_IN_SECONDS seconds",
                         type=int)
+    parser.add_argument("-a",
+                        "--leave_at",
+                        help="leave at the time LEAVE_AT [hh:mm]",
+                        type=str)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v",
                        "--version",
@@ -67,6 +71,9 @@ def main():
     elif args.leave_in_seconds:
         car = Car()
         car.leave_in_seconds(args.leave_in_seconds)
+    elif args.leave_at:
+        car = Car()
+        car.leave_at(args.leave_at)
     elif args.test:
         # Just for tests...
         switch = Switch(7)

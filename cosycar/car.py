@@ -28,6 +28,10 @@ class Car():
         with open(Constants.time_to_leave_file, 'w') as ttl_file:
             ttl_file.write(date_to_leave.strftime('%Y,%m,%d,%H,%M'))
 
+    def leave_at(self, leave_at):
+        # if leave_at < now add 24 hours
+        pass
+            
     def check_heaters(self):
         events = Events()
         minutes_to_next_event = events.fetch_next_event()
