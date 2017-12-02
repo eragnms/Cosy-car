@@ -55,8 +55,6 @@ def run():
       with open(HTTP_LOG_FILE, 'a') as log_file:
         log_file.write('Starting the server...\n')
       httpd.serve_forever()
-      with open(HTTP_LOG_FILE, 'a') as log_file:
-        log_file.write('Server is running...\n')
     except KeyboardInterrupt:
       pass
 
