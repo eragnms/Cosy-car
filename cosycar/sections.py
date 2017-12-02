@@ -44,9 +44,12 @@ class Sections():
         config = self._read_config()
         sections = config.sections()
         for section in sections:
+            log.debug("section: {}".format(section))
             items = config.items(section)
             for item, value in items:
+                log.debug("{}, {}".format(item, value))
                 if item == 'heater_name' and value == heater_name:
+                    log.debug("Found section")
                     return section
         return None
     
@@ -62,9 +65,13 @@ class Engine(Sections):
     def __init__(self):
         super().__init__()
         self.in_use = self.check_in_use(self._section_name) 
+        log.debug("Section: {}".format(self._section_name))
         self.heater_name = self.get_heater_name(self._section_name)
+        log.debug("Heater name: {}".format(self.heater_name))
         self.heater_power = self.get_heater_power(self.heater_name)
+        log.debug("Pwr: {}".format(self.heater_power))
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
+        log.debug("z id: {}".format(self.heater_zwave_id))
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")

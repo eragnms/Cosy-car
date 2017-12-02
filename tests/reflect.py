@@ -53,7 +53,7 @@ def run():
     httpd = HTTPServer(server_address, KodeFunHTTPRequestHandler)
     try:
       with open(HTTP_LOG_FILE, 'a') as log_file:
-        log_file.write('Starting the server 1...\n')
+        log_file.write('Starting the server 2...\n')
       httpd.serve_forever()
     except KeyboardInterrupt:
       pass
