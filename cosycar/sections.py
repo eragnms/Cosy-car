@@ -44,12 +44,9 @@ class Sections():
         config = self._read_config()
         sections = config.sections()
         for section in sections:
-            log.debug("section: {}".format(section))
             items = config.items(section)
             for item, value in items:
-                log.debug("{}, {}".format(item, value))
                 if item == 'heater_name' and value == heater_name:
-                    log.debug("Found section")
                     return section
         return None
     
@@ -58,32 +55,31 @@ class Sections():
         config.read(Constants.cfg_file)
         return config
 
+    def _there_is_an_event(self, minutes_to_next_event):
+        return minutes_to_next_event != None
     
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
     _required_energy = 500
     def __init__(self):
-        super().__init__()
         self.in_use = self.check_in_use(self._section_name) 
-        log.debug("Section: {}".format(self._section_name))
         self.heater_name = self.get_heater_name(self._section_name)
-        log.debug("Heater name: {}".format(self.heater_name))
         self.heater_power = self.get_heater_power(self.heater_name)
-        log.debug("Pwr: {}".format(self.heater_power))
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        log.debug("z id: {}".format(self.heater_zwave_id))
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")
-        log.debug("min to next event: {}".format(minutes_to_next_event))
-        time_to_run = self._required_energy / self.heater_power
-        minutes_to_run = time_to_run * 60
-        log.debug("minutes_to_run: {}".format(minutes_to_run))
         switch = Switch(self.heater_zwave_id)
-        log.debug("Checking for on/off")
-        if minutes_to_run >= minutes_to_next_event:
-            log.debug("Turn switch on")
-            switch.turn_on()
+        if self._there_is_an_event(minutes_to_next_event):
+            sec_to_run_before_event = self._required_energy/self.heater_power
+            minutes_to_run_before_event= sec_to_run_before_event * 60
+            log.debug("Checking for on/off")
+            if minutes_to_run_before_event >= minutes_to_next_event:
+                log.debug("Turn switch on")
+                switch.turn_on()
+            else:
+                log.debug("Turn switch off")
+                switch.turn_off()
         else:
             log.debug("Turn switch off")
             switch.turn_off()
@@ -92,7 +88,6 @@ class Engine(Sections):
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
     def __init__(self):
-        super().__init__()
         self.in_use = self.check_in_use(self._section_name) 
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
@@ -101,11 +96,11 @@ class Compartment(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Compartment set_heater_state")
         pass
-        
+
+
 class Windscreen(Sections):
     _section_name = 'SECTION_WINDSCREEN'
     def __init__(self):
-        super().__init__()
         self.in_use = self.check_in_use(self._section_name) 
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)

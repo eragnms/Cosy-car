@@ -20,9 +20,9 @@ REFLECT_PORT = 8080
 ZWAVE_DEVICE_ID = 7
 
 def main():
-    #vera()
+    vera()
     #time.sleep(2)
-    reflect()
+    #reflect()
 
 def vera():
     switch_device(VERA_ADDRESS, VERA_PORT)
