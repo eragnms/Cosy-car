@@ -58,6 +58,14 @@ class EventsTest(unittest.TestCase):
         events = Events()
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
+
+    def test_running_on_overtime_is_zero(self):
+        car = Car()
+        leaving_in = 0
+        car.leave_in_seconds(leaving_in)
+        # We need to test that car makes decision to keep the
+        # heaters running when minutest to next event is 0
+        self.assertTrue(False)
         
 if __name__ == '__main__':
     unittest.main()
