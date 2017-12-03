@@ -48,5 +48,17 @@ class CarTests(unittest.TestCase):
         handle.write.assert_called_once_with(ans)
 
 
+    def test_leave_at(self):
+        now = datetime.datetime.now()
+        two_hours_back = now - datetime.timedelta(days=1, hours=2)
+        m = mock_open()
+        car = Car()
+        with patch('builtins.open', m, create=True):
+            car.leave_at(two_hours_back.strftime('%H:%M'))
+        handle = m()
+        ans = two_hours_back.strftime('%Y,%m,%d,%H,%M')
+        handle.write.assert_called_once_with(ans)
+
+
 if __name__ == '__main__':
     unittest.main()
