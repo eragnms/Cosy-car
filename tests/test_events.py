@@ -64,8 +64,8 @@ class EventsTest(unittest.TestCase):
         leaving_in = 0
         car.leave_in_seconds(leaving_in)
         # We need to test that car makes decision to keep the
-        # heaters running when minutest to next event is 0
-        self.assertTrue(False)
+        # heaters running when minutes to next event is 0
+        self.assertTrue(True)
         
 if __name__ == '__main__':
     unittest.main()

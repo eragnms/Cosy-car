@@ -50,13 +50,14 @@ class CarTests(unittest.TestCase):
 
     def test_leave_at(self):
         now = datetime.datetime.now()
-        two_hours_back = now - datetime.timedelta(days=1, hours=2)
+        two_hours_back = now - datetime.timedelta(hours=2)
+        one_day_forward = two_hours_back + datetime.timedelta(days=1)
         m = mock_open()
         car = Car()
         with patch('builtins.open', m, create=True):
             car.leave_at(two_hours_back.strftime('%H:%M'))
         handle = m()
-        ans = two_hours_back.strftime('%Y,%m,%d,%H,%M')
+        ans = one_day_forward.strftime('%Y,%m,%d,%H,%M')
         handle.write.assert_called_once_with(ans)
 
 

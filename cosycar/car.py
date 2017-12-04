@@ -35,7 +35,7 @@ class Car():
         date_to_leave = datetime.datetime.strptime(date_to_leave,
                                                    '%Y:%m:%d:%H:%M')
         if (date_to_leave <= now):
-            date_to_leave = date_to_leave - datetime.timedelta(days=1)
+            date_to_leave = date_to_leave + datetime.timedelta(days=1)
         with open(Constants.time_to_leave_file, 'w') as ttl_file:
             ttl_file.write(date_to_leave.strftime('%Y,%m,%d,%H,%M'))
         
