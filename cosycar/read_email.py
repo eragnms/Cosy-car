@@ -5,8 +5,8 @@ import imaplib
 import email
 
 ORG_EMAIL = "@gmail.com"
-FROM_EMAIL = "mycosycar" + ORG_EMAIL
-FROM_PWD = "CJ#3L%0@7mB3|(w(fWDKF4i/3Sw#?g3>/9"
+FROM_EMAIL = "what email address to use" + ORG_EMAIL
+FROM_PWD = "store this somewhere else"
 SMTP_SERVER = "imap.gmail.com"
 SMTP_PORT = 993
 
