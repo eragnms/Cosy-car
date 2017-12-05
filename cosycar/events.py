@@ -6,6 +6,7 @@ import datetime
 import configparser
 
 from cosycar.constants import Constants
+from cosycar.read_email import ReadEmail
 
 log = logging.getLogger(__name__)
 
@@ -19,23 +20,38 @@ class Events():
     def fetch_next_event(self):
         minutes_to_file_event = self._minutes_to_file_event()
         log.debug("min to file event: {}".format(minutes_to_file_event))
-        # Note! Calendar events (as file events) must be able
-        # to return negative values.
+        # Note! All event types (as file events) must be able
+        # to return negative values. A negative value represents an
+        # event that has passed.
         minutes_to_cal_event = None
+        minutes_to_email_event = self._minutes_to_email_event()
         minutes_to_next_event = self._pick_time_to_use(minutes_to_cal_event,
-                                                       minutes_to_file_event)
+                                                       minutes_to_file_event,
+                                                       minutes_to_email_event)
         return minutes_to_next_event
 
-    def _pick_time_to_use(self, event_1, event_2):
-        if (event_1 is not None) and (event_2 is not None):
-            time_to_use = min(event_1, event_2)
+    def _pick_time_to_use(self, event_1, event_2, event_3):
+        if self._not_all_is_none(event_1, event_2, event_3):
+            time_to_use = min(event_1, event_2, event_3)
         elif event_1 is not None:
             time_to_use = event_1
         elif event_2 is not None:
             time_to_use = event_2
+        elif event_3 is not None:
+            time_to_use = event_3
         else:
             time_to_use = None
         return time_to_use
+
+    def _not_all_is_none(self, event_1, event_2, event_3):
+        not_all_is_none = False
+        if event_1 is not None:
+            not_all_is_none = True
+        if event_2 is not None:
+            not_all_is_none = True
+        if event_3 is not None:
+            not_all_is_none = True
+        return not_all_is_none
 
     def _minutes_to_file_event(self):
         event = self._file_event()
@@ -54,6 +70,20 @@ class Events():
         else:
             minutes_to_file_event = None
         return minutes_to_file_event
+
+    def _minutes_to_email_event(self):
+        # check if there is an email in the inbox
+        # if there is an email check if:
+        # 1. the email has a time on the format HHMM in the subject
+        # 2. check if the email has "cancel" as subject
+        # If subject is cancel delete all emails in the inbox
+        # If time in subject has passed overtime delete all emails
+        # Report the time back
+        minutes_to_email_event = None
+        email = ReadEmail()
+        subject = email.fetch()
+        print(subject)
+        return minutes_to_email_event
 
     def _passed_event(self, event_time):
         return event_time < 0
