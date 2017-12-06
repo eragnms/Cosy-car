@@ -3,20 +3,27 @@
 import logging
 import imaplib
 import email
+import configparser
 
-ORG_EMAIL = "@gmail.com"
-FROM_EMAIL = "what email address to use" + ORG_EMAIL
-FROM_PWD = "store this somewhere else"
-SMTP_SERVER = "imap.gmail.com"
-SMTP_PORT = 993
+from cosycar.constants import Constants
 
 log = logging.getLogger(__name__)
 
 
 class ReadEmail():
+    def __init__(self):
+        config = configparser.ConfigParser()
+        config.read(Constants.cfg_file)
+        self._org_email = config.get('EMAIL', 'org_email')
+        self._from_email = config.get('EMAIL', 'email_address')
+        self._from_email += self._org_email
+        self._from_pwd = config.get('EMAIL', 'password')
+        self._smtp_server = config.get('EMAIL', 'smtp_server')
+        self._smtp_port = config.getint('EMAIL', 'smtp_port')
+    
     def fetch(self):
-        mail = imaplib.IMAP4_SSL(SMTP_SERVER)
-        mail.login(FROM_EMAIL, FROM_PWD)
+        mail = imaplib.IMAP4_SSL(self._smtp_server)
+        mail.login(self._from_email, self._from_pwd)
         mail.select('inbox')
 
         type, data = mail.search(None, 'ALL')

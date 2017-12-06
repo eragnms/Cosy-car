@@ -25,6 +25,7 @@ class Events():
         # event that has passed.
         minutes_to_cal_event = None
         minutes_to_email_event = self._minutes_to_email_event()
+        # minutes_to_email_event = None
         minutes_to_next_event = self._pick_time_to_use(minutes_to_cal_event,
                                                        minutes_to_file_event,
                                                        minutes_to_email_event)
@@ -44,13 +45,10 @@ class Events():
         return time_to_use
 
     def _not_all_is_none(self, event_1, event_2, event_3):
-        not_all_is_none = False
-        if event_1 is not None:
-            not_all_is_none = True
-        if event_2 is not None:
-            not_all_is_none = True
-        if event_3 is not None:
-            not_all_is_none = True
+        not_all_is_none = True
+        not_all_is_none = not_all_is_none and (event_1 is not None)
+        not_all_is_none = not_all_is_none and (event_2 is not None)
+        not_all_is_none = not_all_is_none and (event_3 is not None)
         return not_all_is_none
 
     def _minutes_to_file_event(self):
