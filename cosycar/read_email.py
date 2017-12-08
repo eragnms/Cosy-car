@@ -30,21 +30,14 @@ class ReadEmail():
         mail_ids = data[0]
 
         id_list = mail_ids.split()
-        print(id_list)
         # first_email_id = int(id_list[0])
         latest_email_id = int(id_list[-1])
-        print(latest_email_id)
-
         subject = None
-        typ, data = mail.fetch(str(latest_email_id), 'BODY[HEADER.FIELDS (SUBJECT)]')
+        typ, data = mail.fetch(str(latest_email_id),
+                               'BODY[HEADER.FIELDS (SUBJECT)]')
         for response_part in data:
             if isinstance(response_part, tuple):
                 for item in response_part:
-                    print("*********************")
-                    print("A tuple {}".format(item))
-                    print("*********************")
-                    print("")
-                    print("")
                 #print(response_part)
                 msg = email.message_from_string(str(response_part[1]))
                 #print('Message %s\n%s\n' % (1, data[0][1]))

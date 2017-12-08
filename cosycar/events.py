@@ -23,16 +23,22 @@ class Events():
         # Note! All event types (as file events) must be able
         # to return negative values. A negative value represents an
         # event that has passed.
-        minutes_to_cal_event = None
+        minutes_to_calendar_event = None
         minutes_to_email_event = self._minutes_to_email_event()
         # minutes_to_email_event = None
-        minutes_to_next_event = self._pick_time_to_use(minutes_to_cal_event,
+        minutes_to_next_event = self._pick_time_to_use(minutes_to_calendar_event,
                                                        minutes_to_file_event,
                                                        minutes_to_email_event)
         return minutes_to_next_event
 
     def _pick_time_to_use(self, event_1, event_2, event_3):
-        if self._not_all_is_none(event_1, event_2, event_3):
+        if self._at_least_one_is_not_none(event_1, event_2, event_3):
+            if event_1 is None:
+                event_1 = 999
+            if event_2 is None:
+                event_2 = 999    
+            if event_3 is None:
+                event_3 = 999
             time_to_use = min(event_1, event_2, event_3)
         elif event_1 is not None:
             time_to_use = event_1
@@ -44,12 +50,12 @@ class Events():
             time_to_use = None
         return time_to_use
 
-    def _not_all_is_none(self, event_1, event_2, event_3):
-        not_all_is_none = True
-        not_all_is_none = not_all_is_none and (event_1 is not None)
-        not_all_is_none = not_all_is_none and (event_2 is not None)
-        not_all_is_none = not_all_is_none and (event_3 is not None)
-        return not_all_is_none
+    def _at_least_one_is_not_none(self, event_1, event_2, event_3):
+        not_all_are_none = True
+        not_all_are_none = not_all_are_none and (event_1 is not None)
+        not_all_are_none = not_all_are_none and (event_2 is not None)
+        not_all_are_none = not_all_are_none and (event_3 is not None)
+        return not_all_are_none
 
     def _minutes_to_file_event(self):
         event = self._file_event()
