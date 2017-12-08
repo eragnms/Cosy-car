@@ -25,7 +25,6 @@ class Events():
         # event that has passed.
         minutes_to_calendar_event = None
         minutes_to_email_event = self._minutes_to_email_event()
-        # minutes_to_email_event = None
         minutes_to_next_event = self._pick_time_to_use(minutes_to_calendar_event,
                                                        minutes_to_file_event,
                                                        minutes_to_email_event)
@@ -76,18 +75,9 @@ class Events():
         return minutes_to_file_event
 
     def _minutes_to_email_event(self):
-        # check if there is an email in the inbox
-        # if there are emails in the inbox check the last one:
-        # 1. the email has a time on the format HHMM in the subject
-        # 2. check if the email has "cancel" as subject
-        # 3. if the email has not got any of the above check the next email
-        # If subject is cancel delete all emails in the inbox
-        # If time in subject has passed overtime delete all emails
-        # Report the time back from subject
         minutes_to_email_event = None
         email = ReadEmail()
-        subject = email.fetch()
-        print(subject)
+        minutes_to_email_event = email.fetch()
         return minutes_to_email_event
 
     def _passed_event(self, event_time):

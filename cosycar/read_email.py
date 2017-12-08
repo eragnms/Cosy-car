@@ -4,6 +4,7 @@ import logging
 import imaplib
 import email
 import configparser
+import datetime
 
 from cosycar.constants import Constants
 
@@ -30,25 +31,48 @@ class ReadEmail():
         mail_ids = data[0]
 
         id_list = mail_ids.split()
-        # first_email_id = int(id_list[0])
-        latest_email_id = int(id_list[-1])
-        subject = None
-        typ, data = mail.fetch(str(latest_email_id),
-                               'BODY[HEADER.FIELDS (SUBJECT)]')
-        for response_part in data:
-            if isinstance(response_part, tuple):
-                for item in response_part:
-                #print(response_part)
-                msg = email.message_from_string(str(response_part[1]))
-                #print('Message %s\n%s\n' % (1, data[0][1]))
-                #print("*********************")
-                #print(msg)
-                #print("*********************")
-                subject = msg['Subject']
-                print("subject: {}".format(subject))
-                # email_from = msg['from']
-        return subject
+        minutes_to_next_event = None
+        
+        for email_id in id_list:
+            curr_sub = None
+            typ, data = mail.fetch(str(int(email_id)),
+                                   'BODY[HEADER.FIELDS (SUBJECT)]')
+            for response_part in data:
+                if isinstance(response_part, tuple):
+                    for item in response_part:
+                        text = item.decode()
+                        ix = text.find('Subject:')
+                        if ix is not -1:
+                            curr_sub = text.split('Subject:')[1].split('\r')[0]
+                            curr_sub = curr_sub.strip()
+            found_cancel = False
+            found_time = False
+            if curr_sub is not None:
+                if curr_sub.find('Cancel') is not -1:
+                    found_cancel = True
+                if curr_sub.find('found_cancel') is not -1:
+                    found_cancel = True
+                if len(curr_sub) == 4 and curr_sub.isdigit():
+                   found_time = True
+            if found_cancel:
+                self._delete(mail, id_list)
+            if found_time:
+                now = datetime.datetime.now()
+                now_date = now.strftime('%Y:%m:%d')
+                date_to_leave = "{}:{}{}:{}{}".format(now_date,
+                                                      curr_sub[0],
+                                                      curr_sub[1],
+                                                      curr_sub[2],
+                                                      curr_sub[3])
+                date_to_leave = datetime.datetime.strptime(date_to_leave,
+                                                           '%Y:%m:%d:%H:%M')
+                if (date_to_leave <= now):
+                    date_to_leave = date_to_leave + datetime.timedelta(days=1)
+                delta = date_to_leave - now
+                minutes_to_next_event = delta.total_seconds() / 60
+        return minutes_to_next_event
 
-    def delete(self):
-        # delete all emails in the inbox
-        pass
+    def _delete(self, mail, id_list):
+        for email_id in id_list:
+            mail.store(email_id, '+FLAGS', '\\Deleted')
+        mail.expunge()
