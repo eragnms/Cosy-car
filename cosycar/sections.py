@@ -59,7 +59,7 @@ class Sections():
 
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
-    _required_energy = 500
+    _required_energy = 700
 
     def __init__(self):
         self.in_use = self.check_in_use(self._section_name)
@@ -75,13 +75,13 @@ class Engine(Sections):
             minutes_to_run_before_event = h_to_run_before_event * 60
             log.debug("Checking for on/off")
             if minutes_to_run_before_event >= minutes_to_next_event:
-                log.debug("Turn switch on")
+                log.info("Turn switch on: {}".format(self.heater_zwave_id))
                 switch.turn_on()
             else:
-                log.debug("Turn switch off")
+                log.info("Turn switch off: {}".format(self.heater_zwave_id))
                 switch.turn_off()
         else:
-            log.debug("Turn switch off")
+            log.info("Turn switch off: {}".format(self.heater_zwave_id))
             switch.turn_off()
 
 
@@ -101,7 +101,7 @@ class Compartment(Sections):
 
 class Windscreen(Sections):
     _section_name = 'SECTION_WINDSCREEN'
-    _required_energy = 500
+    _required_energy = 700
 
     def __init__(self):
         self.in_use = self.check_in_use(self._section_name)
