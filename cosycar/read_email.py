@@ -5,6 +5,7 @@ import imaplib
 import email
 import configparser
 import datetime
+from email.parser import HeaderParser
 
 from cosycar.constants import Constants
 
@@ -21,8 +22,33 @@ class ReadEmail():
         self._from_pwd = config.get('EMAIL', 'password')
         self._smtp_server = config.get('EMAIL', 'smtp_server')
         self._smtp_port = config.getint('EMAIL', 'smtp_port')
-    
+
+
     def fetch(self):
+        mail = imaplib.IMAP4_SSL(self._smtp_server)
+        mail.login(self._from_email, self._from_pwd)
+        mail.select('inbox')
+
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0]
+        id_list = mail_ids.split()
+        
+        minutes_to_next_event = None
+        
+        for email_id in id_list:
+            email_subject = None
+            sender = None
+            data = mail.fetch(str(int(email_id)), '(BODY[HEADER])')
+            header_data = data[1][0][1].decode()
+            parser = HeaderParser()
+            msg = parser.parsestr(header_data)
+            email_subject = msg['Subject'].strip()
+            sender = msg['From']).strip()
+            minutes_to_next_event = self._check_subject(email_subject)
+            
+        return minutes_to_next_event
+        
+    def fetch_old(self):
         mail = imaplib.IMAP4_SSL(self._smtp_server)
         mail.login(self._from_email, self._from_pwd)
         mail.select('inbox')
