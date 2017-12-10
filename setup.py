@@ -43,7 +43,9 @@ setup(
     },
     packages=['cosycar'],
     install_requires=[
-        '',
+        'pyvera',
     ],
+    data_files=[(os.environ['HOME'] + '/.config',
+                 ['cosycar/config/cosycar_template.cfg'])],
 )
 

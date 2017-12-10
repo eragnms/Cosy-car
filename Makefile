@@ -1,14 +1,18 @@
+SHELL := /bin/bash
+
 init:
-	pip install -r requirements.txt
+	source /home/mats/.virtualenvs/cosytest/bin/activate; \
+	mkdir -p ~/.config; \
 	pip install .
 
 unittest:
 	python -m unittest
 
 integration:
-	tests/cosycar_integration.py
+	source /home/mats/.virtualenvs/cosytest/bin/activate; \
+	tests/integration.py
 
-end-to-end: init unittest integration
+end-to-end: init integration
 
 
 
