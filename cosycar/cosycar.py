@@ -8,6 +8,7 @@ import logging
 
 from cosycar.constants import Constants
 from cosycar.car import Car
+from cosycar.create_events import CreateEvent
 
 from cosycar.zwave import Switch 
 
@@ -25,12 +26,12 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 
 def main():
     logging.basicConfig(filename='/tmp/should_be_elsewhere.log',
-                        level='DEBUG',
+                        level='INFO',
                         format=Constants.log_format)
     log = logging.getLogger(__name__)
     log.debug("Cosycar: {}".format(__version__))
@@ -66,14 +67,14 @@ def main():
         car = Car()
         car.check_heaters()
     elif args.leave_in:
-        car = Car()
-        car.leave_in(args.leave_in)
+        new_event = CreateEvent()
+        new_event.leave_in(args.leave_in)
     elif args.leave_in_seconds:
-        car = Car()
-        car.leave_in_seconds(args.leave_in_seconds)
+        new_event = CreateEvent()
+        new_event.leave_in_seconds(args.leave_in_seconds)
     elif args.leave_at:
-        car = Car()
-        car.leave_at(args.leave_at)
+        new_event = CreateEvent()
+        new_event.leave_at(args.leave_at)
     elif args.test:
         # Just for tests...
         switch = Switch(7)
