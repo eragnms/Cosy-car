@@ -117,11 +117,11 @@ class Windscreen(Sections):
             minutes_to_run_before_event = h_to_run_before_event * 60
             log.debug("Checking for on/off")
             if minutes_to_run_before_event >= minutes_to_next_event:
-                log.debug("Turn switch on")
+                log.info("Turn switch on: {}".format(self.heater_zwave_id))
                 switch.turn_on()
             else:
-                log.debug("Turn switch off")
+                log.info("Turn switch off: {}".format(self.heater_zwave_id))
                 switch.turn_off()
         else:
-            log.debug("Turn switch off")
+            log.info("Turn switch off: {}".format(self.heater_zwave_id))
             switch.turn_off()

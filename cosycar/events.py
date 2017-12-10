@@ -23,11 +23,13 @@ class Events():
         # Note! All event types (as file events) must be able
         # to return negative values. A negative value represents an
         # event that has passed.
+        self._check_email_event()
         minutes_to_calendar_event = None
-        minutes_to_email_event = self._minutes_to_email_event()
         minutes_to_next_event = self._pick_time_to_use(minutes_to_calendar_event,
                                                        minutes_to_file_event,
-                                                       minutes_to_email_event)
+                                                       None)
+        if minutes_to_next_event is not None:
+            log.info("Next event in: {}".format(minutes_to_next_event))
         return minutes_to_next_event
 
     def _pick_time_to_use(self, event_1, event_2, event_3):
@@ -74,11 +76,9 @@ class Events():
             minutes_to_file_event = None
         return minutes_to_file_event
 
-    def _minutes_to_email_event(self):
-        minutes_to_email_event = None
+    def _check_email_event(self):
         email = ReadEmail()
-        minutes_to_email_event = email.fetch()
-        return minutes_to_email_event
+        email.fetch()
 
     def _passed_event(self, event_time):
         return event_time < 0

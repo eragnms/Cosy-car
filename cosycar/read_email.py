@@ -3,14 +3,10 @@
 import logging
 import imaplib
 import configparser
-import datetime
 from email.parser import HeaderParser
 
 from cosycar.constants import Constants
-from cosycar.car import Car
-# I guess we have a circular import here: car imports events that imports read_email that imports car
-# Create a new class CreateFile that contains the creation of a will_leave_at file and import it here,
-# also import it into Car.
+from cosycar.create_events import CreateEvent
 
 log = logging.getLogger(__name__)
 
@@ -54,13 +50,16 @@ class ReadEmail():
             elif self._subject_is_time(email_subject):
                 self._create_will_leave_at(email_subject)
                 self._delete(mail, id_list)
+                return
+
+        self._delete(mail, id_list)
 
     def _create_will_leave_at(self, leave_at):
         time_to_leave = "{}{}:{}{}".format(leave_at[0], leave_at[1],
                                            leave_at[2], leave_at[3])
-        car = Car()
-        log.debug("New leave at: {}".format(time_to_leave))
-        car.leave_at(time_to_leave)
+        new_event = CreateEvent()
+        log.info("New event from email, leave at: {}".format(time_to_leave))
+        new_event.leave_at(time_to_leave)
 
     def _sender_is_nok(self, sender):
         ok_senders = self._ok_senders.split(',')
@@ -78,6 +77,8 @@ class ReadEmail():
             found_cancel = True
         if subject.find('cancel') is not -1:
             found_cancel = True
+        delete_event = CreateEvent()
+        delete_event.delete()
         return found_cancel
 
     def _subject_is_time(self, subject):
