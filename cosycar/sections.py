@@ -57,11 +57,11 @@ class Sections():
         return minutes_to_next_event is not None
 
     def should_be_on(self, switch, minutes_to_next_event):
+        currently_on = switch.is_on()
         if self._there_is_an_event(minutes_to_next_event):
             h_to_run_before_event = self._required_energy / self.heater_power
             minutes_to_run_before_event = h_to_run_before_event * 60
             log.debug("Checking for on/off")
-            currently_on = switch.is_on()
             if minutes_to_run_before_event >= minutes_to_next_event:
                 if not currently_on:
                     log.info("Turn switch on: {}".format(self.heater_zwave_id))
@@ -89,9 +89,12 @@ class Engine(Sections):
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")
-        switch = Switch(self.heater_zwave_id)
-        self.should_be_on(switch, minutes_to_next_event)
-
+        if self.in_use:
+            switch = Switch(self.heater_zwave_id)
+            self.should_be_on(switch, minutes_to_next_event)
+        else:
+            log.debug("Section {} not in use".format(self._section_name))
+            
 
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
@@ -104,8 +107,11 @@ class Compartment(Sections):
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Compartmentt_heater_state")
-        switch = Switch(self.heater_zwave_id)
-        self.should_be_on(switch, minutes_to_next_event)
+        if self.in_use:
+            switch = Switch(self.heater_zwave_id)
+            self.should_be_on(switch, minutes_to_next_event)
+        else:
+            log.debug("Section {} not in use".format(self._section_name))
 
 
 class Windscreen(Sections):
@@ -120,5 +126,8 @@ class Windscreen(Sections):
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
-        switch = Switch(self.heater_zwave_id)
-        self.should_be_on(switch, minutes_to_next_event)
+        if self.in_use:
+            switch = Switch(self.heater_zwave_id)
+            self.should_be_on(switch, minutes_to_next_event)
+        else:
+            log.debug("Section {} not in use".format(self._section_name))
