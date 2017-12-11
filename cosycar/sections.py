@@ -56,6 +56,26 @@ class Sections():
     def _there_is_an_event(self, minutes_to_next_event):
         return minutes_to_next_event is not None
 
+    def should_be_on(self, switch, minutes_to_next_event):
+        if self._there_is_an_event(minutes_to_next_event):
+            h_to_run_before_event = self._required_energy / self.heater_power
+            minutes_to_run_before_event = h_to_run_before_event * 60
+            log.debug("Checking for on/off")
+            currently_on = switch.is_on()
+            if minutes_to_run_before_event >= minutes_to_next_event:
+                if not currently_on:
+                    log.info("Turn switch on: {}".format(self.heater_zwave_id))
+                switch.turn_on()
+            else:
+                if currently_on:
+                    log.info(
+                        "Turn switch off: {}".format(self.heater_zwave_id))
+                switch.turn_off()
+        else:
+            if currently_on:
+                log.info("Turn switch off: {}".format(self.heater_zwave_id))
+            switch.turn_off()
+
 
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
@@ -70,19 +90,7 @@ class Engine(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")
         switch = Switch(self.heater_zwave_id)
-        if self._there_is_an_event(minutes_to_next_event):
-            h_to_run_before_event = self._required_energy / self.heater_power
-            minutes_to_run_before_event = h_to_run_before_event * 60
-            log.debug("Checking for on/off")
-            if minutes_to_run_before_event >= minutes_to_next_event:
-                log.info("Turn switch on: {}".format(self.heater_zwave_id))
-                switch.turn_on()
-            else:
-                log.info("Turn switch off: {}".format(self.heater_zwave_id))
-                switch.turn_off()
-        else:
-            log.info("Turn switch off: {}".format(self.heater_zwave_id))
-            switch.turn_off()
+        self.should_be_on(switch, minutes_to_next_event)
 
 
 class Compartment(Sections):
@@ -95,8 +103,9 @@ class Compartment(Sections):
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
 
     def set_heater_state(self, minutes_to_next_event):
-        log.debug("Compartment set_heater_state")
-        pass
+        log.debug("Compartmentt_heater_state")
+        switch = Switch(self.heater_zwave_id)
+        self.should_be_on(switch, minutes_to_next_event)
 
 
 class Windscreen(Sections):
@@ -112,16 +121,4 @@ class Windscreen(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
         switch = Switch(self.heater_zwave_id)
-        if self._there_is_an_event(minutes_to_next_event):
-            h_to_run_before_event = self._required_energy / self.heater_power
-            minutes_to_run_before_event = h_to_run_before_event * 60
-            log.debug("Checking for on/off")
-            if minutes_to_run_before_event >= minutes_to_next_event:
-                log.info("Turn switch on: {}".format(self.heater_zwave_id))
-                switch.turn_on()
-            else:
-                log.info("Turn switch off: {}".format(self.heater_zwave_id))
-                switch.turn_off()
-        else:
-            log.info("Turn switch off: {}".format(self.heater_zwave_id))
-            switch.turn_off()
+        self.should_be_on(switch, minutes_to_next_event)
