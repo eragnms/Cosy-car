@@ -5,11 +5,20 @@ import configparser
 
 from cosycar.constants import Constants
 from cosycar.zwave import Switch
+from cosycar.weather import SATWeather
 
 log = logging.getLogger(__name__)
 
 
 class Sections():
+    def __init__(self):
+        self.minutes_to_next_event = None
+        self.required_energy = 0
+        config = self._read_config()
+        self._country = config.get('WUNDER_WEATHER', 'country')
+        self._city = config.get('WUNDER_WEATHER', 'city')
+        self._wunder_key = config.get('WUNDER_WEATHER', 'wunder_key')
+    
     def available_sections(self):
         available_sections = [Engine(), Compartment(), Windscreen()]
         return available_sections
@@ -53,35 +62,49 @@ class Sections():
         config.read(Constants.cfg_file)
         return config
 
-    def _there_is_an_event(self, minutes_to_next_event):
-        return minutes_to_next_event is not None
+    def _there_is_an_event(self):
+        return self.minutes_to_next_event is not None
 
-    def should_be_on(self, switch, minutes_to_next_event):
-        currently_on = switch.is_on()
-        if self._there_is_an_event(minutes_to_next_event):
-            h_to_run_before_event = self._required_energy / self.heater_power
-            minutes_to_run_before_event = h_to_run_before_event * 60
-            log.debug("Checking for on/off")
-            if minutes_to_run_before_event >= minutes_to_next_event:
-                if not currently_on:
-                    log.info("Turn switch on: {}".format(self.heater_zwave_id))
-                switch.turn_on()
+    def should_be_on(self):
+        if self.in_use:
+            switch = Switch(self.heater_zwave_id)
+            currently_on = switch.is_on()
+            if self._there_is_an_event():
+                h_to_run_before_event = self.required_energy / self.heater_power
+                minutes_to_run_before_event = h_to_run_before_event * 60
+                log.debug("Checking for on/off")
+                if minutes_to_run_before_event >= self.minutes_to_next_event:
+                    if not currently_on:
+                        log.info("Turn switch on: {}".format(self.heater_zwave_id))
+                    switch.turn_on()
+                else:
+                    if currently_on:
+                        log.info("Turn switch off: {}".format(self.heater_zwave_id))
+                    switch.turn_off()
             else:
                 if currently_on:
-                    log.info(
-                        "Turn switch off: {}".format(self.heater_zwave_id))
-                switch.turn_off()
+                    log.info("Turn switch off: {}".format(self.heater_zwave_id))
+                switch.turn_off()        
         else:
-            if currently_on:
-                log.info("Turn switch off: {}".format(self.heater_zwave_id))
-            switch.turn_off()
-
-
+            log.debug("Section {} not in use".format(self._section_name))
+            
+    def fetch_weather(self):
+        local_weather = SATWeather(self._country, self._city, self._wunder_key)
+        weather_json = local_weather.get_weather()
+        weather = {}
+        weather['temperature'] = weather_json['current_observation']['temp_c']
+        weather['wind_speed'] = weather_json['current_observation']['wind_kph']
+        return weather
+        
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
-    _required_energy = 700
+    _required_energy = {'11': 0,
+                        '10': 500,
+                        '-16': 2000,
+                        '-17': 2000,}
 
     def __init__(self):
+        super().__init__()
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
@@ -89,29 +112,44 @@ class Engine(Sections):
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")
-        if self.in_use:
-            switch = Switch(self.heater_zwave_id)
-            self.should_be_on(switch, minutes_to_next_event)
+        self.minutes_to_next_event = minutes_to_next_event
+        weather = self.fetch_weather()
+        self.required_energy = self._find_required_energy(weather)
+        self.should_be_on()
+
+    def _find_required_energy(self, weather):
+        energy = 0
+        temperature = weather['temperature']
+        keys = list(self._required_energy.keys())
+        keys = list(map(int, keys))
+        max_temperature = max(keys)
+        min_temperature = min(keys)
+        if temperature >= max_temperature:
+            temp_key = max_temperature
+        elif temperature <= min_temperature:
+            temp_key = min_temperature
         else:
-            log.debug("Section {} not in use".format(self._section_name))
+            temp_key = min(keys, key=lambda x:abs(x-temperature))
+        energy = self._required_energy[str(temp_key)]
+        return energy
             
 
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
+    _required_energy = 0
 
     def __init__(self):
+        super().__init__()
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
 
     def set_heater_state(self, minutes_to_next_event):
-        log.debug("Compartmentt_heater_state")
-        if self.in_use:
-            switch = Switch(self.heater_zwave_id)
-            self.should_be_on(switch, minutes_to_next_event)
-        else:
-            log.debug("Section {} not in use".format(self._section_name))
+        log.debug("Compartment_heater_state")
+        self.minutes_to_next_event = minutes_to_next_event
+        self.required_energy = self._required_energy
+        self.should_be_on()
 
 
 class Windscreen(Sections):
@@ -119,6 +157,7 @@ class Windscreen(Sections):
     _required_energy = 700
 
     def __init__(self):
+        super().__init__()
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
@@ -126,8 +165,9 @@ class Windscreen(Sections):
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
-        if self.in_use:
-            switch = Switch(self.heater_zwave_id)
-            self.should_be_on(switch, minutes_to_next_event)
-        else:
-            log.debug("Section {} not in use".format(self._section_name))
+        self.minutes_to_next_event = minutes_to_next_event
+        self.required_energy = self._required_energy
+        self.should_be_on()
+
+
+

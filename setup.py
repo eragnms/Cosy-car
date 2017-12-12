@@ -44,6 +44,8 @@ setup(
     packages=['cosycar'],
     install_requires=[
         'pyvera',
+        'urllib3',
+        'json',
     ],
     data_files=[(os.environ['HOME'] + '/.config',
                  ['cosycar/config/cosycar_template.cfg'])],
