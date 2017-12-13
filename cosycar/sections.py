@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+- Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
+- Once the above test cases are in place add the whole table for engine, then move the energy check to the base class and
+  add the same functionality to the other sections, and test them as well.
+- Mock the email reader in test cases in eventes. Just mock it away for now.
+
 import logging
 import configparser
 
