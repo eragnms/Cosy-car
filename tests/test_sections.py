@@ -7,6 +7,9 @@ import configparser
 
 from cosycar.constants import Constants
 from cosycar.sections import Sections
+from cosycar.sections import Engine
+from cosycar.sections import Compartment
+from cosycar.sections import Windscreen
 
 CFG_FILE = 'tests/data/cosycar_template.cfg'
 
@@ -77,6 +80,37 @@ class CarSectionTests(unittest.TestCase):
         zwave_id = sections.get_heater_zwave_id(heater_name)
         self.assertIsNone(zwave_id)
 
+    def test_find_required_energy_engine_1(self):
+        section = Engine()
+        weather = {'temperature': 10} 
+        energy = section.find_required_energy(weather)
+        self.assertEqual(energy, 500)
 
+    def test_find_required_energy_engine_2(self):
+        section = Engine()
+        weather = {'temperature': 1} 
+        energy = section.find_required_energy(weather)
+        self.assertEqual(energy, 600)
+
+    def test_find_required_energy_compartment_1(self):
+        section = Compartment()
+        weather = {'temperature': 10} 
+        energy = section.find_required_energy(weather)
+        self.assertEqual(energy, 500)
+
+    def test_find_required_energy_windscreen_1(self):
+        section = Windscreen()
+        weather = {'temperature': 10} 
+        energy = section.find_required_energy(weather)
+        self.assertEqual(energy, 500)
+
+    @patch('cosycar.zwave.Switch.is_on')
+    @patch('cosycar.zwave.Switch.turn_off')
+    @patch('cosycar.zwave.Switch.turn_on')    
+    def test_should_be_on_1(self, mock_turn_off, mock_turn_on, mock_is_on):
+        section = Engine()
+        section.should_be_on()
+        self.assertFalse(True)
+        
 if __name__ == '__main__':
     unittest.main()

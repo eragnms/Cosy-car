@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-- Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
-- Once the above test cases are in place add the whole table for engine, then move the energy check to the base class and
-  add the same functionality to the other sections, and test them as well.
-- Mock the email reader in test cases in eventes. Just mock it away for now.
+# - Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
+# - Once the above test cases are in place add the whole table for engine, then move the energy check to the base class and
+#   add the same functionality to the other sections, and test them as well.
+
 
 import logging
 import configparser
@@ -100,7 +100,24 @@ class Sections():
         weather['temperature'] = weather_json['current_observation']['temp_c']
         weather['wind_speed'] = weather_json['current_observation']['wind_kph']
         return weather
-        
+
+    def find_required_energy(self, weather):
+        energy = 0
+        temperature = weather['temperature']
+        keys = list(self._required_energy.keys())
+        keys = list(map(int, keys))
+        max_temperature = max(keys)
+        min_temperature = min(keys)
+        if temperature >= max_temperature:
+            temp_key = max_temperature
+        elif temperature <= min_temperature:
+            temp_key = min_temperature
+        else:
+            temp_key = min(keys, key=lambda x:abs(x-temperature))
+        energy = self._required_energy[str(temp_key)]
+        return energy
+            
+    
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
     _required_energy = {'11': 0,
@@ -119,25 +136,9 @@ class Engine(Sections):
         log.debug("Engine set_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
         weather = self.fetch_weather()
-        self.required_energy = self._find_required_energy(weather)
+        self.required_energy = self.find_required_energy(weather)
         self.should_be_on()
 
-    def _find_required_energy(self, weather):
-        energy = 0
-        temperature = weather['temperature']
-        keys = list(self._required_energy.keys())
-        keys = list(map(int, keys))
-        max_temperature = max(keys)
-        min_temperature = min(keys)
-        if temperature >= max_temperature:
-            temp_key = max_temperature
-        elif temperature <= min_temperature:
-            temp_key = min_temperature
-        else:
-            temp_key = min(keys, key=lambda x:abs(x-temperature))
-        energy = self._required_energy[str(temp_key)]
-        return energy
-            
 
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'

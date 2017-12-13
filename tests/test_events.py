@@ -2,6 +2,7 @@
 
 import unittest
 import logging
+from unittest.mock import patch
 
 from cosycar.constants import Constants
 from cosycar.car import Car
@@ -18,7 +19,8 @@ class EventsTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_fetch_coming_file_event(self):
+    @patch('cosycar.events.Events._check_email_event')
+    def test_fetch_coming_file_event(self, mock_email_event):
         leaving_in = 27
         new_event = CreateEvent()
         new_event.leave_in(leaving_in)
@@ -26,7 +28,8 @@ class EventsTest(unittest.TestCase):
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
-    def test_fetch_coming_file_event_set_twice(self):
+    @patch('cosycar.events.Events._check_email_event')
+    def test_fetch_coming_file_event_set_twice(self, mock_email_event):
         new_event = CreateEvent()
         leaving_in = 27
         new_event.leave_in(leaving_in + 10)
@@ -35,7 +38,8 @@ class EventsTest(unittest.TestCase):
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
-    def test_fetch_coming_file_event_long_into_future(self):
+    @patch('cosycar.events.Events._check_email_event')
+    def test_fetch_coming_file_event_long_into_future(self, mock_email_event):
         new_event = CreateEvent()
         leaving_in = 2745
         new_event.leave_in(leaving_in)
@@ -43,7 +47,8 @@ class EventsTest(unittest.TestCase):
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
-    def test_fetch_coming_file_event_in_the_past(self):
+    @patch('cosycar.events.Events._check_email_event')
+    def test_fetch_coming_file_event_in_the_past(self, mock_email_event):
         new_event = CreateEvent()
         leaving_in = -27
         new_event.leave_in(leaving_in)
@@ -51,7 +56,8 @@ class EventsTest(unittest.TestCase):
         next_event = events.fetch_next_event()
         self.assertIsNone(next_event)
 
-    def test_running_on_overtime(self):
+    @patch('cosycar.events.Events._check_email_event')
+    def test_running_on_overtime(self, mock_email_event):
         """ Should run for a while on overtime. """
         new_event = CreateEvent()
         leaving_in = -2
