@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 
+# - Reduce the rate with which we read weather data from wunder. Write read data to a file when fetched, and stamp it with 
+#   a timestamp. If the timestamp is older than X then read new data from wunder.
+# - Move the tables to the config file, see example config read below.
 # - Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
-# - Once the above test cases are in place add the whole table for engine, then move the energy check to the base class and
-#   add the same functionality to the other sections, and test them as well.
+# - Once the above test cases are in place add the whole table for engine.
+
+# >>> config.read('example.ini')
+# ['example.ini']
+# >>> config.sections()
+# ['bitbucket.org', 'topsecret.server.com']
+# >>> 'bitbucket.org' in config
+# True
+# >>> topsecret = config['topsecret.server.com']
+# >>> topsecret['ForwardX11']
 
 
 import logging
