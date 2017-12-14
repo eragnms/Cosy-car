@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # - Reduce the rate with which we read weather data from wunder. Write read data to a file when fetched, and stamp it with 
-#   a timestamp. If the timestamp is older than X then read new data from wunder.
+#   a timestamp. If the timestamp is older than X then read new data from wunder. Store the weather data in a configparser 
+#   file to make it easy to write and parse.
 # - Move the tables to the config file, see example config read below.
 # - Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
 # - Once the above test cases are in place add the whole table for engine.
