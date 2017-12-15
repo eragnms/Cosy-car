@@ -6,6 +6,7 @@
 # - Move the tables to the config file, see example config read below.
 # - Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
 # - Once the above test cases are in place add the whole table for engine.
+# - Update the documentation and release 1.0.0
 
 # >>> config.read('example.ini')
 # ['example.ini']
