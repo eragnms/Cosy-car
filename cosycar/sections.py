@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+# - Use globals() to build a list of available sections.
 # - Reduce the rate with which we read weather data from wunder. Write read data to a file when fetched, and stamp it with 
 #   a timestamp. If the timestamp is older than X then read new data from wunder. Store the weather data in a configparser 
 #   file to make it easy to write and parse.
