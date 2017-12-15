@@ -21,10 +21,11 @@ class SATWeatherError(Exception):
 class SATWeather():
     """ Will read the weather from Wunderground """
 
-    def __init__(self, country, city, wunder_key):
+    def __init__(self, country, city, wunder_key, weather_file):
         self._country = country
         self._city = city
         self._wunder_key = wunder_key
+        self._weather_file = weather_file
 
     def get_weather(self):
         """

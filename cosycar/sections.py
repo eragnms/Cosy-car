@@ -108,7 +108,10 @@ class Sections():
             log.debug("Section {} not in use".format(self._section_name))
             
     def fetch_weather(self):
-        local_weather = SATWeather(self._country, self._city, self._wunder_key)
+        local_weather = SATWeather(self._country,
+                                   self._city,
+                                   self._wunder_key,
+                                   Constants.weather_file)
         weather_json = local_weather.get_weather()
         weather = {}
         weather['temperature'] = weather_json['current_observation']['temp_c']
