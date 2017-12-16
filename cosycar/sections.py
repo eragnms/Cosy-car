@@ -24,7 +24,7 @@ import configparser
 
 from cosycar.constants import Constants
 from cosycar.zwave import Switch
-from cosycar.weather import SATWeather
+from cosycar.weather import CosyWeather
 
 log = logging.getLogger(__name__)
 
@@ -108,14 +108,12 @@ class Sections():
             log.debug("Section {} not in use".format(self._section_name))
             
     def fetch_weather(self):
-        local_weather = SATWeather(self._country,
-                                   self._city,
-                                   self._wunder_key,
-                                   Constants.weather_file)
-        weather_json = local_weather.get_weather()
-        weather = {}
-        weather['temperature'] = weather_json['current_observation']['temp_c']
-        weather['wind_speed'] = weather_json['current_observation']['wind_kph']
+        local_weather = CosyWeather(self._country,
+                                    self._city,
+                                    self._wunder_key,
+                                    Constants.weather_file,
+                                    Constants.weather_interval)
+        weather = local_weather.get_weather()
         return weather
 
     def find_required_energy(self, weather):
