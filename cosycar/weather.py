@@ -31,28 +31,44 @@ class CosyWeather():
         self._weather_file = weather_file
         self._interval = interval
 
+now verify get_weather
+        
     def get_weather(self):
         """
         Avilable keys in json  are: weather, temp_c, pressure_mb,
         wind_kph, wind_dir, relative_humidity, dewpoint_c, windchill_c,
         precip_today_metric, feelslike_c
         """
+        weather_data = {}
         if self._fetch_from_wunder():
             weather_url = self._build_weather_url()
             weather = self._fetch_wunder_weather(weather_url)
             weather_json = self._decode_deserialize(weather)
             self._check_weather_data(weather_json)
-            weather_data = {}
             temp = weather_json['current_observation']['temp_c']
             weather_data['temperature'] = temp
             wind_speed = weather_json['current_observation']['wind_kph']
             weather_data['wind_speed'] = wind_speed
         else:
-            read_from_file
-        return weather
+            config = configparser.ConfigParser()
+            config.read(Constants.cfg_file)
+            weather_infos = config.options('WEATHER_DATA')
+            for info in weather_infos:
+                weather_data[info] = config.get('WEATHER_DATA', info)
+        return weather_data
 
     def _fetch_from_wunder(self):
-        check if weather data is older than interval
+        config = configparser.ConfigParser()
+        config.read(Constants.cfg_file)
+        timestamp = config.get('TIME_STAMP', 'saved_on')
+        now = datetime.datetime.now()
+        weather_timestamp = timestamp.strptime('%Y,%m,%d,%H,%M')
+        delta = now - weather_timestamp
+        minutes_since_timestamp = round(delta.seconds / 60)
+        if minutes_since_timestamp > constants.weather_interval:
+            return True
+        else:
+            return False
 
     def save_weather(self, weather):
         """
