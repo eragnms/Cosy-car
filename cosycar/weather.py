@@ -31,8 +31,6 @@ class CosyWeather():
         self._weather_file = weather_file
         self._interval = interval
 
-now verify get_weather
-        
     def get_weather(self):
         """
         Avilable keys in json  are: weather, temp_c, pressure_mb,
@@ -51,7 +49,7 @@ now verify get_weather
             weather_data['wind_speed'] = wind_speed
         else:
             config = configparser.ConfigParser()
-            config.read(Constants.cfg_file)
+            config.read(self._weather_file)
             weather_infos = config.options('WEATHER_DATA')
             for info in weather_infos:
                 weather_data[info] = config.get('WEATHER_DATA', info)
@@ -59,13 +57,13 @@ now verify get_weather
 
     def _fetch_from_wunder(self):
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(self._weather_file)
         timestamp = config.get('TIME_STAMP', 'saved_on')
         now = datetime.datetime.now()
         weather_timestamp = timestamp.strptime('%Y,%m,%d,%H,%M')
         delta = now - weather_timestamp
         minutes_since_timestamp = round(delta.seconds / 60)
-        if minutes_since_timestamp > constants.weather_interval:
+        if minutes_since_timestamp > self._interval:
             return True
         else:
             return False
@@ -80,10 +78,10 @@ now verify get_weather
         config['TIME_STAMP'] = {'saved_on': now.strftime('%Y,%m,%d,%H,%M')}
         config['WEATHER_DATA'] = {}
         for key, value in weather.items():
-            config['WEATHER_DATA'][key] = str(value)        
+            config['WEATHER_DATA'][key] = str(value)
         with open(self._weather_file, 'w') as configfile:
             config.write(configfile)
-        
+
     def _build_weather_url(self):
         weather_url = 'http://api.wunderground.com/api/'
         weather_url += self._wunder_key + '/geolookup/conditions/q/'

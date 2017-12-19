@@ -83,34 +83,35 @@ class CarSectionTests(unittest.TestCase):
     def test_find_required_energy_engine_1(self):
         section = Engine()
         weather = {'temperature': 10} 
-        energy = section.find_required_energy(weather)
+        energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
     def test_find_required_energy_engine_2(self):
         section = Engine()
         weather = {'temperature': 1} 
-        energy = section.find_required_energy(weather)
+        energy = section.find_req_energy(weather)
         self.assertEqual(energy, 600)
 
     def test_find_required_energy_compartment_1(self):
         section = Compartment()
         weather = {'temperature': 10} 
-        energy = section.find_required_energy(weather)
+        energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
     def test_find_required_energy_windscreen_1(self):
         section = Windscreen()
         weather = {'temperature': 10} 
-        energy = section.find_required_energy(weather)
+        energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
     @patch('cosycar.zwave.Switch.is_on')
     @patch('cosycar.zwave.Switch.turn_off')
-    @patch('cosycar.zwave.Switch.turn_on')    
+    @patch('cosycar.zwave.Switch.turn_on')
     def test_should_be_on_1(self, mock_turn_off, mock_turn_on, mock_is_on):
         section = Engine()
         section.should_be_on()
         self.assertFalse(True)
-        
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 # - Use globals() to build a list of available sections.
-# - Reduce the rate with which we read weather data from wunder. Write read data to a file when fetched, and stamp it with 
-#   a timestamp. If the timestamp is older than X then read new data from wunder. Store the weather data in a configparser 
+# - Reduce the rate with which we read weather data from wunder.
+#   Write read data to a file when fetched, and stamp it with
+#   a timestamp. If the timestamp is older than X then read new
+#   data from wunder. Store the weather data in a configparser
 #   file to make it easy to write and parse.
 # - Move the tables to the config file, see example config read below.
-# - Write testcases for method selecting energy required. Test the section, mock weather check and check the energy coming out.
+# - Write testcases for method selecting energy required. Test
+#   the section, mock weather check and check the energy coming out.
 # - Once the above test cases are in place add the whole table for engine.
 # - Update the documentation and release 1.0.0
 
@@ -17,7 +20,6 @@
 # True
 # >>> topsecret = config['topsecret.server.com']
 # >>> topsecret['ForwardX11']
-
 
 import logging
 import configparser
@@ -32,12 +34,12 @@ log = logging.getLogger(__name__)
 class Sections():
     def __init__(self):
         self.minutes_to_next_event = None
-        self.required_energy = 0
+        self.req_energy = 0
         config = self._read_config()
         self._country = config.get('WUNDER_WEATHER', 'country')
         self._city = config.get('WUNDER_WEATHER', 'city')
         self._wunder_key = config.get('WUNDER_WEATHER', 'wunder_key')
-    
+
     def available_sections(self):
         available_sections = [Engine(), Compartment(), Windscreen()]
         return available_sections
@@ -89,37 +91,35 @@ class Sections():
             switch = Switch(self.heater_zwave_id)
             currently_on = switch.is_on()
             if self._there_is_an_event():
-                h_to_run_before_event = self.required_energy / self.heater_power
+                h_to_run_before_event = self.req_energy / self.heater_power
                 minutes_to_run_before_event = h_to_run_before_event * 60
                 log.debug("Checking for on/off")
                 if minutes_to_run_before_event >= self.minutes_to_next_event:
                     if not currently_on:
-                        log.info("Turn switch on: {}".format(self.heater_zwave_id))
+                        log.info("Turn on: {}".format(self.heater_zwave_id))
                     switch.turn_on()
                 else:
                     if currently_on:
-                        log.info("Turn switch off: {}".format(self.heater_zwave_id))
+                        log.info("Turn off: {}".format(self.heater_zwave_id))
                     switch.turn_off()
             else:
                 if currently_on:
-                    log.info("Turn switch off: {}".format(self.heater_zwave_id))
-                switch.turn_off()        
+                    log.info("Turn off: {}".format(self.heater_zwave_id))
+                switch.turn_off()
         else:
             log.debug("Section {} not in use".format(self._section_name))
-            
+
     def fetch_weather(self):
-        local_weather = CosyWeather(self._country,
-                                    self._city,
-                                    self._wunder_key,
-                                    Constants.weather_file,
+        local_weather = CosyWeather(self._country, self._city,
+                                    self._wunder_key, Constants.weather_file,
                                     Constants.weather_interval)
         weather = local_weather.get_weather()
         return weather
 
-    def find_required_energy(self, weather):
+    def find_req_energy(self, weather):
         energy = 0
         temperature = weather['temperature']
-        keys = list(self._required_energy.keys())
+        keys = list(self._req_energy.keys())
         keys = list(map(int, keys))
         max_temperature = max(keys)
         min_temperature = min(keys)
@@ -128,17 +128,19 @@ class Sections():
         elif temperature <= min_temperature:
             temp_key = min_temperature
         else:
-            temp_key = min(keys, key=lambda x:abs(x-temperature))
-        energy = self._required_energy[str(temp_key)]
+            temp_key = min(keys, key=lambda x: abs(x - temperature))
+        energy = self._req_energy[str(temp_key)]
         return energy
-            
-    
+
+
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
-    _required_energy = {'11': 0,
-                        '10': 500,
-                        '-16': 2000,
-                        '-17': 2000,}
+    _req_energy = {
+        '11': 0,
+        '10': 500,
+        '-16': 2000,
+        '-17': 2000,
+    }
 
     def __init__(self):
         super().__init__()
@@ -151,13 +153,13 @@ class Engine(Sections):
         log.debug("Engine set_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
         weather = self.fetch_weather()
-        self.required_energy = self.find_required_energy(weather)
+        self.req_energy = self.find_req_energy(weather)
         self.should_be_on()
 
 
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
-    _required_energy = 0
+    _req_energy = 0
 
     def __init__(self):
         super().__init__()
@@ -169,13 +171,13 @@ class Compartment(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Compartment_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
-        self.required_energy = self._required_energy
+        self.req_energy = self._req_energy
         self.should_be_on()
 
 
 class Windscreen(Sections):
     _section_name = 'SECTION_WINDSCREEN'
-    _required_energy = 700
+    _req_energy = 700
 
     def __init__(self):
         super().__init__()
@@ -187,8 +189,5 @@ class Windscreen(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
-        self.required_energy = self._required_energy
+        self.req_energy = self._req_energy
         self.should_be_on()
-
-
-
