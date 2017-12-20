@@ -21,12 +21,16 @@ class CarSectionTests(unittest.TestCase):
         self._config = configparser.ConfigParser()
         self._config.read(CFG_FILE)
         self._weather_interval = 10
+        self._weather_file = Constants.weather_storage_file
 
     def tearDown(self):
         pass
 
+
+    @patch('configparser.ConfigParser.read')
+    @patch('cosycar.weather.CosyWeather._fetch_wunder_weather')
     @patch('configparser.ConfigParser.get')
-    def test_fetch_from_file(self, get_mock):
+    def test_fetch_from_file(self, get_mock, fetch_mock, read_mock):
         now = datetime.datetime.now()
         timestamp = now - datetime.timedelta(minutes=self._weather_interval)
         get_mock.return_value = timestamp
@@ -36,7 +40,8 @@ class CarSectionTests(unittest.TestCase):
                               "/tmp/test_weather_file",
                               self._weather_interval)
         weather_data = weather.get_weather()
-        self.assertTrue(False)
+        expected = [call(self._weather_file), call(self._weather_file)]
+        self.assertTrue(read_mock.call_args_list == expected)
 
 
 if __name__ == '__main__':

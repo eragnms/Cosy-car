@@ -38,7 +38,7 @@ class CosyWeather():
         precip_today_metric, feelslike_c
         """
         weather_data = {}
-        if self._fetch_from_wunder():
+        if self._should_fetch_from_wunder():
             weather_url = self._build_weather_url()
             weather = self._fetch_wunder_weather(weather_url)
             weather_json = self._decode_deserialize(weather)
@@ -47,6 +47,7 @@ class CosyWeather():
             weather_data['temperature'] = temp
             wind_speed = weather_json['current_observation']['wind_kph']
             weather_data['wind_speed'] = wind_speed
+            self._save_weather(weather_data)
         else:
             config = configparser.ConfigParser()
             config.read(self._weather_file)
@@ -55,7 +56,7 @@ class CosyWeather():
                 weather_data[info] = config.get('WEATHER_DATA', info)
         return weather_data
 
-    def _fetch_from_wunder(self):
+    def _should_fetch_from_wunder(self):
         config = configparser.ConfigParser()
         config.read(self._weather_file)
         timestamp = config.get('TIME_STAMP', 'saved_on')
@@ -68,7 +69,7 @@ class CosyWeather():
         else:
             return False
 
-    def save_weather(self, weather):
+    def _save_weather(self, weather):
         """
         weather: should be a dictionary with eg
         weather = {'temperature': 10} 
