@@ -27,12 +27,18 @@ class CarSectionTests(unittest.TestCase):
         pass
 
 
+    @patch('configparser.ConfigParser.options')
     @patch('configparser.ConfigParser.read')
     @patch('cosycar.weather.CosyWeather._fetch_wunder_weather')
     @patch('configparser.ConfigParser.get')
-    def test_fetch_from_file(self, get_mock, fetch_mock, read_mock):
+    def test_fetch_from_file(self,
+                             get_mock,
+                             fetch_mock,
+                             read_mock,
+                             options_mock):
         now = datetime.datetime.now()
         timestamp = now - datetime.timedelta(minutes=self._weather_interval)
+        timestamp = timestamp.strftime('%Y,%m,%d,%H,%M')
         get_mock.return_value = timestamp
         weather = CosyWeather("Country",
                               "City",
@@ -40,7 +46,8 @@ class CarSectionTests(unittest.TestCase):
                               "/tmp/test_weather_file",
                               self._weather_interval)
         weather_data = weather.get_weather()
-        expected = [call(self._weather_file), call(self._weather_file)]
+        expected = [read_mock(self._weather_file),
+                    read_mock(self._weather_file)]
         self.assertTrue(read_mock.call_args_list == expected)
 
 

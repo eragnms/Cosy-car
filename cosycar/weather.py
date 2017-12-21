@@ -59,9 +59,10 @@ class CosyWeather():
     def _should_fetch_from_wunder(self):
         config = configparser.ConfigParser()
         config.read(self._weather_file)
-        timestamp = config.get('TIME_STAMP', 'saved_on')
+        timestamp = str(config.get('TIME_STAMP', 'saved_on'))
         now = datetime.datetime.now()
-        weather_timestamp = timestamp.strptime('%Y,%m,%d,%H,%M')
+        weather_timestamp = datetime.datetime.strptime(timestamp,
+                                                       '%Y,%m,%d,%H,%M')
         delta = now - weather_timestamp
         minutes_since_timestamp = round(delta.seconds / 60)
         if minutes_since_timestamp > self._interval:
