@@ -19,10 +19,7 @@ class Events():
 
     def fetch_next_event(self):
         minutes_to_file_event = self._minutes_to_file_event()
-        log.debug("min to file event: {}".format(minutes_to_file_event))
-        # Note! All event types (as file events) must be able
-        # to return negative values. A negative value represents an
-        # event that has passed.
+        # Note! A negative value represents an event that has passed.
         self._check_email_event()
         minutes_to_calendar_event = None
         minutes_to_next_event = self._pick_time_to_use(minutes_to_calendar_event,

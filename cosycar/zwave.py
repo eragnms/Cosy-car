@@ -41,3 +41,8 @@ class Switch(Zwave):
     def turn_off(self):
         log.debug("Switching off: {}".format(self.zwave_id))
         self._devices[self._index].switch_off()
+
+    def is_on(self):
+        is_on = self._devices[self._index].is_switched_on()
+        log.debug("Switch {} is on: {}".format(self.zwave_id, is_on))
+        return is_on

@@ -17,11 +17,7 @@ class Car():
     def check_heaters(self):
         events = Events()
         minutes_to_next_event = events.fetch_next_event()
-        log.debug("Checking heaters: {}".format(minutes_to_next_event))
-        log.debug("Next event in: {}".format(minutes_to_next_event))
         sections = Sections()
         available_sections = sections.available_sections()
-        log.debug("sections: {}".format(available_sections))
         for section in available_sections:
-            log.debug("Checking section: {}".format(section))
             section.set_heater_state(minutes_to_next_event)
