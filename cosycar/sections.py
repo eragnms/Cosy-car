@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# - Use globals() to build a list of available sections.
+# - Use properties to build a list of available sections, see page 194 in Clean Python.
 # - Reduce the rate with which we read weather data from wunder.
 #   Write read data to a file when fetched, and stamp it with
 #   a timestamp. If the timestamp is older than X then read new
