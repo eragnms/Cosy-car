@@ -82,7 +82,7 @@ class Sections():
         return self.minutes_to_next_event is not None
 
     def should_be_on(self):
-        switch_should_be_on = False 
+        switch_should_be_on = False
         if self.in_use:
             switch = Switch(self.heater_zwave_id)
             currently_on = switch.is_on()

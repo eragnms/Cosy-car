@@ -44,7 +44,7 @@ class CarSectionTests(unittest.TestCase):
     def test_get_heaterdata(self, read_config_mock):
         read_config_mock.return_value = self._config
         sections = Sections()
-        heater_name = '"block_heater"'
+        heater_name = 'block_heater'
         power = sections.get_heater_power(heater_name)
         self.assertEqual(power, 1000)
 
@@ -52,7 +52,7 @@ class CarSectionTests(unittest.TestCase):
     def test_get_heater_power_2(self, read_config_mock):
         read_config_mock.return_value = self._config
         sections = Sections()
-        heater_name = '"compartment_heater_1"'
+        heater_name = 'compartment_heater_1'
         power = sections.get_heater_power(heater_name)
         self.assertEqual(power, 1500)
 
@@ -60,7 +60,7 @@ class CarSectionTests(unittest.TestCase):
     def test_get_heater_zwave_id(self, read_config_mock):
         read_config_mock.return_value = self._config
         sections = Sections()
-        heater_name = '"compartment_heater_1"'
+        heater_name = 'compartment_heater_1'
         zwave_id = sections.get_heater_zwave_id(heater_name)
         self.assertEqual(zwave_id, 14)
 
@@ -68,7 +68,7 @@ class CarSectionTests(unittest.TestCase):
     def test_get_heater_zwave_id_2(self, read_config_mock):
         read_config_mock.return_value = self._config
         sections = Sections()
-        heater_name = '"block_heater"'
+        heater_name = 'block_heater'
         zwave_id = sections.get_heater_zwave_id(heater_name)
         self.assertEqual(zwave_id, 21)
 
