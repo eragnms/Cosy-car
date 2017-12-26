@@ -104,13 +104,59 @@ class CarSectionTests(unittest.TestCase):
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
+    @patch('cosycar.zwave.Switch')
     @patch('cosycar.zwave.Switch.is_on')
     @patch('cosycar.zwave.Switch.turn_off')
     @patch('cosycar.zwave.Switch.turn_on')
-    def test_should_be_on_1(self, mock_turn_off, mock_turn_on, mock_is_on):
+    def test_should_be_on_currently_off(self,
+                                        mock_turn_off,
+                                        mock_turn_on,
+                                        mock_is_on,
+                                        switch_mock,
+                                    ):
         section = Engine()
-        section.should_be_on()
-        self.assertFalse(True)
+        section.minutes_to_next_event = 10        
+        section.req_energy = 100
+        section.heater_power = 200
+        mock_is_on.return_value = False
+        switch_should_be_on = section.should_be_on()
+        self.assertTrue(switch_should_be_on)
+
+    @patch('cosycar.zwave.Switch')
+    @patch('cosycar.zwave.Switch.is_on')
+    @patch('cosycar.zwave.Switch.turn_off')
+    @patch('cosycar.zwave.Switch.turn_on')
+    def test_should_be_on_currently_on(self,
+                                       mock_turn_off,
+                                       mock_turn_on,
+                                       mock_is_on,
+                                       switch_mock,
+                                   ):
+        section = Engine()
+        section.minutes_to_next_event = 10        
+        section.req_energy = 100
+        section.heater_power = 200
+        mock_is_on.return_value = True
+        switch_should_be_on = section.should_be_on()
+        self.assertTrue(switch_should_be_on)
+
+    @patch('cosycar.zwave.Switch')
+    @patch('cosycar.zwave.Switch.is_on')
+    @patch('cosycar.zwave.Switch.turn_off')
+    @patch('cosycar.zwave.Switch.turn_on')
+    def test_should_be_off_currently_on(self,
+                                        mock_turn_off,
+                                        mock_turn_on,
+                                        mock_is_on,
+                                        switch_mock,
+                                    ):
+        section = Engine()
+        section.minutes_to_next_event = 40        
+        section.req_energy = 100
+        section.heater_power = 200
+        mock_is_on.return_value = True
+        switch_should_be_on = section.should_be_on()
+        self.assertFalse(switch_should_be_on)
 
 
 if __name__ == '__main__':

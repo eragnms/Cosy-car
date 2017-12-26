@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 
-# - Use properties to build a list of available sections, see page 194 in Clean Python.
-# - Reduce the rate with which we read weather data from wunder.
-#   Write read data to a file when fetched, and stamp it with
-#   a timestamp. If the timestamp is older than X then read new
-#   data from wunder. Store the weather data in a configparser
-#   file to make it easy to write and parse.
-# - Move the tables to the config file, see example config read below.
-# - Write testcases for method selecting energy required. Test
+# 1- Write testcases for method selecting energy required. Test
 #   the section, mock weather check and check the energy coming out.
-# - Once the above test cases are in place add the whole table for engine.
-# - Update the documentation and release 1.0.0
+# 2- Once the above test cases are in place add the whole table for engine.
+# 3- Use properties to build a list of available sections, see page 194 in Clean Python.
+# 4- Move the tables to the config file, see example config read below.
+# 5- Update the documentation and release 1.0.0
 
 # >>> config.read('example.ini')
 # ['example.ini']
@@ -87,6 +82,7 @@ class Sections():
         return self.minutes_to_next_event is not None
 
     def should_be_on(self):
+        switch_should_be_on = False 
         if self.in_use:
             switch = Switch(self.heater_zwave_id)
             currently_on = switch.is_on()
@@ -98,16 +94,20 @@ class Sections():
                     if not currently_on:
                         log.info("Turn on: {}".format(self.heater_zwave_id))
                     switch.turn_on()
+                    switch_should_be_on = True
                 else:
                     if currently_on:
                         log.info("Turn off: {}".format(self.heater_zwave_id))
                     switch.turn_off()
+                    switch_should_be_on = False
             else:
                 if currently_on:
                     log.info("Turn off: {}".format(self.heater_zwave_id))
                 switch.turn_off()
+                switch_should_be_on = False
         else:
             log.debug("Section {} not in use".format(self._section_name))
+        return switch_should_be_on
 
     def fetch_weather(self):
         local_weather = CosyWeather(self._country, self._city,
@@ -133,11 +133,47 @@ class Sections():
         return energy
 
 
+   11 => 0,                                                                                                                                                             10 => 30,                                                                                                                                                            9 => 30,                                                                                                                                                             8 => 30,                                                                                                                                                             7 => 30,                                                                                                                                                             6 => 30,                                                                                                                                                             5 => 30,                                                                                                                                                             4 => 40,                                                                                                                                                             3 => 40,                                                                                                                                                             2 => 50,                                                                                                                                                             1 => 50,                                                                                                                                                             0 => 60,                                                                                                                                                             -1 => 60,                                                                                                                                                            -2 => 70,                                                                                                                                                            -3 => 70,                                                                                                                                                            -4 => 80,                                                                                                                                                            -5 => 80,                                                                                                                                                            -6 => 90,                                                                                                                                                            -7 => 90,                                                                                                                                                            -8 => 100,                                                                                                                                                           -9 => 100,                                                                                                                                                           -10 => 110,                                                                                                                                                          -11 => 110,                                                                                                                                                          -12 => 120,                                                                                                                                                          -13 => 120,                                                                                                                                                          -14 => 120,                                                                                                                                                          -15 => 120,                                                                                                                                                          -16 => 120,                                                                                                                                                          -17 => 120,                                                                                                                                                      );
+
+
+   Compartment
+
+
+
+        11 => 0,                                                                                                                                                             10 => 10,                                                                                                                                                            9 => 10,                                                                                                                                                             8 => 10,                                                                                                                                                             7 => 10,                                                                                                                                                             6 => 10,                                                                                                                                                             5 => 15,                                                                                                                                                             4 => 15,                                                                                                                                                             3 => 15,                                                                                                                                                             2 => 15,                                                                                                                                                             1 => 15,                                                                                                                                                             0 => 20,                                                                                                                                                             -1 => 30,                                                                                                                                                            -2 => 30,                                                                                                                                                            -3 => 30,                                                                                                                                                            -4 => 40,                                                                                                                                                            -5 => 40,                                                                                                                                                            -6 => 40,                                                                                                                                                            -7 => 50,                                                                                                                                                            -8 => 50,                                                                                                                                                            -9 => 50,                                                                                                                                                            -10 => 50,                                                                                                                                                           -11 => 50,                                                                                                                                                           -12 => 50,                                                                                                                                                           -13 => 60,                                                                                                                                                           -14 => 60,                                                                                                                                                           -15 => 60,                                                                                                                                                           -16 => 60,                                                                                                                                                           -17 => 60
+
+
+    
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
     _req_energy = {
         '11': 0,
         '10': 500,
+        '9': 500,
+        '8': 500,
+        '7': 500,
+        '6': 500,
+        '5': 500,
+        '4': 500,
+        '3': 500,
+        '2': 500,
+        '1': 500,
+        '0': 500,
+        '-1': 500,
+        '-2': 500,
+        '-3': 500,
+        '-4': 500,
+        '-5': 500,
+        '-6': 500,
+        '-7': 500,
+        '-8': 500,
+        '-9': 500,
+        '-10': 500,
+        '-11': 500,
+        '-12': 500,
+        '-13': 500,
+        '-14': 500,
+        '-15': 500,
         '-16': 2000,
         '-17': 2000,
     }
