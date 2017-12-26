@@ -90,7 +90,7 @@ class CarSectionTests(unittest.TestCase):
         section = Engine()
         weather = {'temperature': 1} 
         energy = section.find_req_energy(weather)
-        self.assertEqual(energy, 600)
+        self.assertEqual(energy, 833)
 
     def test_find_required_energy_compartment_1(self):
         section = Compartment()
