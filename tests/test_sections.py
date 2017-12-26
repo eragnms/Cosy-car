@@ -82,25 +82,25 @@ class CarSectionTests(unittest.TestCase):
 
     def test_find_required_energy_engine_1(self):
         section = Engine()
-        weather = {'temperature': 10} 
+        weather = {'temperature': 10}
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
     def test_find_required_energy_engine_2(self):
         section = Engine()
-        weather = {'temperature': 1} 
+        weather = {'temperature': 1}
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 833)
 
     def test_find_required_energy_compartment_1(self):
         section = Compartment()
-        weather = {'temperature': 10} 
+        weather = {'temperature': 10}
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
     def test_find_required_energy_windscreen_1(self):
         section = Windscreen()
-        weather = {'temperature': 10} 
+        weather = {'temperature': 10}
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 500)
 
@@ -108,14 +108,14 @@ class CarSectionTests(unittest.TestCase):
     @patch('cosycar.zwave.Switch.is_on')
     @patch('cosycar.zwave.Switch.turn_off')
     @patch('cosycar.zwave.Switch.turn_on')
-    def test_should_be_on_currently_off(self,
-                                        mock_turn_off,
-                                        mock_turn_on,
-                                        mock_is_on,
-                                        switch_mock,
-                                    ):
+    def test_should_be_on_currently_off(
+            self,
+            mock_turn_off,
+            mock_turn_on,
+            mock_is_on,
+            switch_mock, ):
         section = Engine()
-        section.minutes_to_next_event = 10        
+        section.minutes_to_next_event = 10
         section.req_energy = 100
         section.heater_power = 200
         mock_is_on.return_value = False
@@ -126,14 +126,14 @@ class CarSectionTests(unittest.TestCase):
     @patch('cosycar.zwave.Switch.is_on')
     @patch('cosycar.zwave.Switch.turn_off')
     @patch('cosycar.zwave.Switch.turn_on')
-    def test_should_be_on_currently_on(self,
-                                       mock_turn_off,
-                                       mock_turn_on,
-                                       mock_is_on,
-                                       switch_mock,
-                                   ):
+    def test_should_be_on_currently_on(
+            self,
+            mock_turn_off,
+            mock_turn_on,
+            mock_is_on,
+            switch_mock, ):
         section = Engine()
-        section.minutes_to_next_event = 10        
+        section.minutes_to_next_event = 10
         section.req_energy = 100
         section.heater_power = 200
         mock_is_on.return_value = True
@@ -144,14 +144,14 @@ class CarSectionTests(unittest.TestCase):
     @patch('cosycar.zwave.Switch.is_on')
     @patch('cosycar.zwave.Switch.turn_off')
     @patch('cosycar.zwave.Switch.turn_on')
-    def test_should_be_off_currently_on(self,
-                                        mock_turn_off,
-                                        mock_turn_on,
-                                        mock_is_on,
-                                        switch_mock,
-                                    ):
+    def test_should_be_off_currently_on(
+            self,
+            mock_turn_off,
+            mock_turn_on,
+            mock_is_on,
+            switch_mock, ):
         section = Engine()
-        section.minutes_to_next_event = 40        
+        section.minutes_to_next_event = 40
         section.req_energy = 100
         section.heater_power = 200
         mock_is_on.return_value = True
