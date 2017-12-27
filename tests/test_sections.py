@@ -96,13 +96,25 @@ class CarSectionTests(unittest.TestCase):
         section = Compartment()
         weather = {'temperature': 10}
         energy = section.find_req_energy(weather)
-        self.assertEqual(energy, 500)
+        self.assertEqual(energy, 233)
 
-    def test_find_required_energy_windscreen_1(self):
-        section = Windscreen()
-        weather = {'temperature': 10}
+    def test_find_required_energy_compartment_2(self):
+        section = Compartment()
+        weather = {'temperature': -12.6}
         energy = section.find_req_energy(weather)
-        self.assertEqual(energy, 500)
+        self.assertEqual(energy, 1400)
+
+    def test_find_required_energy_compartment_3(self):
+        section = Compartment()
+        weather = {'temperature': -17.6}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 1400)
+
+    def test_find_required_energy_compartment_4(self):
+        section = Compartment()
+        weather = {'temperature': 11.6}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 0)
 
     @patch('cosycar.zwave.Switch')
     @patch('cosycar.zwave.Switch.is_on')
@@ -157,6 +169,21 @@ class CarSectionTests(unittest.TestCase):
         mock_is_on.return_value = True
         switch_should_be_on = section.should_be_on()
         self.assertFalse(switch_should_be_on)
+
+    def test_available_sections_engine(self):
+        sections = Sections()
+        available = sections.available_sections()
+        self.assertIsInstance(available[0], Engine)
+
+    def test_available_sections_compartment(self):
+        sections = Sections()
+        available = sections.available_sections()
+        self.assertIsInstance(available[1], Compartment)
+
+    def test_available_sections_windscreen(self):
+        sections = Sections()
+        available = sections.available_sections()
+        self.assertIsInstance(available[2], Windscreen)
 
 
 if __name__ == '__main__':

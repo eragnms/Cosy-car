@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# 1- Write testcases for method selecting energy required. Test
-#   the section, mock weather check and check the energy coming out.
-# 2- Once the above test cases are in place add the whole table for engine.
-# 3- Use properties to build a list of available sections, see page 194 in Clean Python.
+# 3- Use properties to build a list of available sections, see page 194
+#    in Clean Python.
 # 4- Move the tables to the config file, see example config read below.
 # 5- Update the documentation and release 1.0.0
 
@@ -167,8 +165,6 @@ class Engine(Sections):
         '-17': 2000,
     }
 
-    # 2000/1000*60=t => x=t*1000/60
-
     def __init__(self):
         super().__init__()
         self.in_use = self.check_in_use(self._section_name)
@@ -183,42 +179,40 @@ class Engine(Sections):
         self.req_energy = self.find_req_energy(weather)
         self.should_be_on()
 
-# Compartment
-# 11 => 0,
-# 10 => 10,
-# 9 => 10,
-# 8 => 10,
-# 7 => 10,
-# 6 => 10,
-# 5 => 15,
-# 4 => 15,
-# 3 => 15,
-# 2 => 15,
-# 1 => 15,
-# 0 => 20,
-# -1 => 30,
-# -2 => 30,
-# -3 => 30,
-# -4 => 40,
-# -5 => 40,
-# -6 => 40,
-# -7 => 50,
-# -8 => 50,
-# -9 => 50,
-# -10 => 50,
-# -11 => 50,
-# -12 => 50,
-# -13 => 60,
-# -14 => 60,
-# -15 => 60,
-# -16 => 60,
-# -17 => 60
 
-
-        
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
-    _req_energy = 0
+    _req_energy = {
+        '11': 0,
+        '10': 233,
+        '9': 233,
+        '8': 233,
+        '7': 233,
+        '6': 233,
+        '5': 350,
+        '4': 350,
+        '3': 350,
+        '2': 350,
+        '1': 350,
+        '0': 466,
+        '-1': 700,
+        '-2': 700,
+        '-3': 700,
+        '-4': 933,
+        '-5': 933,
+        '-6': 933,
+        '-7': 1166,
+        '-8': 1166,
+        '-9': 1166,
+        '-10': 1166,
+        '-11': 1166,
+        '-12': 1166,
+        '-13': 1400,
+        '-14': 1400,
+        '-15': 1400,
+        '-16': 1400,
+        '-17': 1400,
+    }
 
     def __init__(self):
         super().__init__()
@@ -230,7 +224,8 @@ class Compartment(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Compartment_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
-        self.req_energy = self._req_energy
+        weather = self.fetch_weather()
+        self.req_energy = self.find_req_energy(weather)
         self.should_be_on()
 
 
@@ -248,5 +243,7 @@ class Windscreen(Sections):
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
+        # weather = self.fetch_weather()
+        # self.req_energy = self.find_req_energy(weather)
         self.req_energy = self._req_energy
         self.should_be_on()
