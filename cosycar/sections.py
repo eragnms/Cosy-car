@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# 3- Use properties to build a list of available sections, see page 194
-#    in Clean Python.
 # 4- Move the tables to the config file, see example config read below.
 # 5- Update the documentation and release 1.0.0
+
 
 # >>> config.read('example.ini')
 # ['example.ini']
