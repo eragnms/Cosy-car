@@ -1,18 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# 4- Move the tables to the config file, see example config read below.
-# 5- Update the documentation and release 1.0.0
-
-
-# >>> config.read('example.ini')
-# ['example.ini']
-# >>> config.sections()
-# ['bitbucket.org', 'topsecret.server.com']
-# >>> 'bitbucket.org' in config
-# True
-# >>> topsecret = config['topsecret.server.com']
-# >>> topsecret['ForwardX11']
-
 import logging
 import configparser
 
