@@ -141,7 +141,9 @@ class CarSectionTests(unittest.TestCase):
         self.assertEqual(energy, 233)
 
     def test_find_required_energy_compartment_6(self):
+        print("Start")
         section = Compartment()
+        print("INit done")
         weather = {'temperature': -8.3}
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 1166)

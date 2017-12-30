@@ -47,15 +47,34 @@ class Sections():
         else:
             return None
 
-    def get_req_energy(self, heater_name):
-        implement this method! Make it read information from the config
-        file. In the config file create a section for each temperature vs
-        energy table and in the heather section refer to which table that is
-        to be used for the actual heater. From that table build a dictionary
-        like dict = {'temp_1': energy_1,
-                     'temp_2': energy_2,}
-        return self._req_energy
-        
+    def get_energy_table(self):
+        # implement this method! Make it read information from the config
+        # file. In the config file create a section for each temperature vs
+        # energy table and in the heather section refer to which table that is
+        # to be used for the actual heater. From that table build a dictionary
+        # like dict = {'temp_1': energy_1,
+        #             'temp_2': energy_2,}
+        energy_table_section = self._read_energy_table()
+        #print("{}: {}".format(self.heater_name, energy_table_section))
+        if energy_table_section:
+            config = self._read_config()
+            energy_table_options = config.options(energy_table_section)
+            energies = {}
+            for option in energy_table_options:
+                energies[option] = config.getint(energy_table_section, option)
+            return energies
+        else:
+            return None
+                
+
+    def _read_energy_table(self):
+        config = self._read_config()
+        heater_section = self._find_heater_section(self.heater_name)
+        if heater_section:
+            return config.get(heater_section, 'energy_table')
+        else:
+            return None
+
     def _find_heater_section(self, heater_name):
         config = self._read_config()
         sections = config.sections()
@@ -112,7 +131,11 @@ class Sections():
     def find_req_energy(self, weather):
         energy = 0
         temperature = weather['temperature']
-        keys = list(self.req_energy.keys())
+
+        print(self.heater_name)
+        print(self.heater_section)
+        
+        keys = list(self.energy_table.keys())
         keys = list(map(int, keys))
         max_temperature = max(keys)
         min_temperature = min(keys)
@@ -122,7 +145,7 @@ class Sections():
             temp_key = min_temperature
         else:
             temp_key = min(keys, key=lambda x: abs(x - temperature))
-        energy = self.req_energy[str(temp_key)]
+        energy = self.energy_table[str(temp_key)]
         return energy
 
 
@@ -158,7 +181,7 @@ class Engine(Sections):
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        self.req_energy = self.get_req_energy(self.heater_name)
+        self.energy_table = self.get_energy_table()
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")
@@ -191,9 +214,10 @@ class Compartment(Sections):
         super().__init__()
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
+        print("My name: {}".format(self.heater_name))
         self.heater_power = self.get_heater_power(self.heater_name)
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        self.req_energy = self.get_req_energy(self.heater_name)
+        self.energy_table = self.get_energy_table()
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Compartment_heater_state")
@@ -213,12 +237,11 @@ class Windscreen(Sections):
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        self.req_energy = self.get_req_energy(self.heater_name)
+        self.energy_table = self.get_energy_table()
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
         self.minutes_to_next_event = minutes_to_next_event
-        # weather = self.fetch_weather()
-        # self.req_energy = self.find_req_energy(weather)
-        self.req_energy = self._req_energy
+        weather = self.fetch_weather()
+        self.req_energy = self.find_req_energy(weather)
         self.should_be_on()
