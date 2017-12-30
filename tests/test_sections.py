@@ -92,6 +92,24 @@ class CarSectionTests(unittest.TestCase):
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 833)
 
+    def test_find_required_energy_engine_3(self):
+        section = Engine()
+        weather = {'temperature': 6.5}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 500)
+
+    def test_find_required_energy_engine_4(self):
+        section = Engine()
+        weather = {'temperature': -14.7}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 2000)
+
+    def test_find_required_energy_engine_5(self):
+        section = Engine()
+        weather = {'temperature': -9.9}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 1830)
+
     def test_find_required_energy_compartment_1(self):
         section = Compartment()
         weather = {'temperature': 10}
@@ -115,6 +133,18 @@ class CarSectionTests(unittest.TestCase):
         weather = {'temperature': 11.6}
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 0)
+
+    def test_find_required_energy_compartment_5(self):
+        section = Compartment()
+        weather = {'temperature': 7.7}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 233)
+
+    def test_find_required_energy_compartment_6(self):
+        section = Compartment()
+        weather = {'temperature': -8.3}
+        energy = section.find_req_energy(weather)
+        self.assertEqual(energy, 1166)
 
     @patch('cosycar.zwave.Switch')
     @patch('cosycar.zwave.Switch.is_on')
