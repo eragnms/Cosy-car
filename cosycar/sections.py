@@ -48,14 +48,7 @@ class Sections():
             return None
 
     def get_energy_table(self):
-        # implement this method! Make it read information from the config
-        # file. In the config file create a section for each temperature vs
-        # energy table and in the heather section refer to which table that is
-        # to be used for the actual heater. From that table build a dictionary
-        # like dict = {'temp_1': energy_1,
-        #             'temp_2': energy_2,}
         energy_table_section = self._read_energy_table()
-        #print("{}: {}".format(self.heater_name, energy_table_section))
         if energy_table_section:
             config = self._read_config()
             energy_table_options = config.options(energy_table_section)
@@ -65,7 +58,6 @@ class Sections():
             return energies
         else:
             return None
-                
 
     def _read_energy_table(self):
         config = self._read_config()
@@ -147,29 +139,6 @@ class Sections():
 
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
-    _req_energy = {
-        '11': 0,
-        '10': 500,
-        '5': 500,
-        '4': 666,
-        '3': 666,
-        '2': 833,
-        '1': 833,
-        '0': 1000,
-        '-1': 1000,
-        '-2': 1166,
-        '-3': 1166,
-        '-4': 1330,
-        '-5': 1330,
-        '-6': 1500,
-        '-7': 1500,
-        '-8': 1660,
-        '-9': 1660,
-        '-10': 1830,
-        '-11': 1830,
-        '-12': 2000,
-        '-17': 2000,
-    }
 
     def __init__(self):
         super().__init__()
@@ -189,22 +158,6 @@ class Engine(Sections):
 
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
-    _req_energy = {
-        '11': 0,
-        '10': 233,
-        '6': 233,
-        '5': 350,
-        '1': 350,
-        '0': 466,
-        '-1': 700,
-        '-3': 700,
-        '-4': 933,
-        '-6': 933,
-        '-7': 1166,
-        '-12': 1166,
-        '-13': 1400,
-        '-17': 1400,
-    }
 
     def __init__(self):
         super().__init__()
