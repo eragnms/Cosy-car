@@ -93,7 +93,13 @@ class Sections():
 
     def should_be_on(self):
         switch_should_be_on = False
+        print("****************")
+        print("here")
+        print("****************")
         switch = Switch(self.heater_zwave_id, self.config_file)
+        print("****************")
+        print("and here")
+        print("****************")
         currently_on = switch.is_on()
         if self._there_is_an_event():
             h_to_run_before_event = self.req_energy / self.heater_power

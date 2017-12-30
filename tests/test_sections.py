@@ -10,6 +10,7 @@ from cosycar.sections import Sections
 from cosycar.sections import Engine
 from cosycar.sections import Compartment
 from cosycar.sections import Windscreen
+from cosycar.zwave import Switch
 
 CFG_FILE = 'tests/data/cosycar_template.cfg'
 
@@ -152,8 +153,8 @@ class CarSectionTests(unittest.TestCase):
     @patch('cosycar.zwave.Switch.turn_on')
     def test_should_be_on_currently_off(
             self,
-            mock_turn_off,
             mock_turn_on,
+            mock_turn_off,
             mock_is_on,
             switch_mock, ):
         section = Engine(CFG_FILE)
@@ -170,8 +171,8 @@ class CarSectionTests(unittest.TestCase):
     @patch('cosycar.zwave.Switch.turn_on')
     def test_should_be_on_currently_on(
             self,
-            mock_turn_off,
             mock_turn_on,
+            mock_turn_off,
             mock_is_on,
             switch_mock, ):
         section = Engine(CFG_FILE)
@@ -188,8 +189,8 @@ class CarSectionTests(unittest.TestCase):
     @patch('cosycar.zwave.Switch.turn_on')
     def test_should_be_off_currently_on(
             self,
-            mock_turn_off,
             mock_turn_on,
+            mock_turn_off,
             mock_is_on,
             switch_mock, ):
         section = Engine(CFG_FILE)
