@@ -9,6 +9,7 @@ import json
 import logging
 import datetime
 import configparser
+import os
 
 log = logging.getLogger(__name__)
 
@@ -53,22 +54,25 @@ class CosyWeather():
             config.read(self._weather_file)
             weather_infos = config.options('WEATHER_DATA')
             for info in weather_infos:
-                weather_data[info] = config.get('WEATHER_DATA', info)
+                weather_data[info] = config.getfloat('WEATHER_DATA', info)
         return weather_data
 
     def _should_fetch_from_wunder(self):
         config = configparser.ConfigParser()
-        config.read(self._weather_file)
-        timestamp = str(config.get('TIME_STAMP', 'saved_on'))
-        now = datetime.datetime.now()
-        weather_timestamp = datetime.datetime.strptime(timestamp,
-                                                       '%Y,%m,%d,%H,%M')
-        delta = now - weather_timestamp
-        minutes_since_timestamp = round(delta.seconds / 60)
-        if minutes_since_timestamp > self._interval:
-            return True
+        if os.path.isfile(self._weather_file):
+            config.read(self._weather_file)
+            timestamp = str(config.get('TIME_STAMP', 'saved_on'))
+            now = datetime.datetime.now()
+            weather_timestamp = datetime.datetime.strptime(timestamp,
+                                                           '%Y,%m,%d,%H,%M')
+            delta = now - weather_timestamp
+            minutes_since_timestamp = round(delta.seconds / 60)
+            if minutes_since_timestamp > self._interval:
+                return True
+            else:
+                return False
         else:
-            return False
+            return True
 
     def _save_weather(self, weather):
         """
