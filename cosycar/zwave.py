@@ -10,10 +10,10 @@ log = logging.getLogger(__name__)
 
 
 class Zwave():
-    def __init__(self, zwave_id):
+    def __init__(self, zwave_id, config_file):
         self.zwave_id = zwave_id
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(config_file)
         ip_address = config.get('ZWAVE_CONTROLLER', 'ip_address')
         port = config.get('ZWAVE_CONTROLLER', 'port')
         controller_address = "http://{}:{}/".format(ip_address, port)
@@ -31,8 +31,8 @@ class Zwave():
 
 
 class Switch(Zwave):
-    def __init__(self, zwave_id):
-        super().__init__(zwave_id)
+    def __init__(self, zwave_id, config_file):
+        super().__init__(zwave_id, config_file)
 
     def turn_on(self):
         log.debug("Switching on: {}".format(self.zwave_id))

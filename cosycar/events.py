@@ -12,9 +12,9 @@ log = logging.getLogger(__name__)
 
 
 class Events():
-    def __init__(self):
+    def __init__(self, config_file):
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(config_file)
         self._overtime = config.getint('CAR_SETTINGS', 'overtime')
 
     def fetch_next_event(self):

@@ -5,10 +5,10 @@ import logging
 from unittest.mock import patch
 
 from cosycar.constants import Constants
-from cosycar.car import Car
 from cosycar.events import Events
 from cosycar.create_events import CreateEvent
 
+CFG_FILE = 'tests/data/cosycar_template.cfg'
 
 class EventsTest(unittest.TestCase):
     def setUp(self):
@@ -24,7 +24,7 @@ class EventsTest(unittest.TestCase):
         leaving_in = 27
         new_event = CreateEvent()
         new_event.leave_in(leaving_in)
-        events = Events()
+        events = Events(CFG_FILE)
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
@@ -34,7 +34,7 @@ class EventsTest(unittest.TestCase):
         leaving_in = 27
         new_event.leave_in(leaving_in + 10)
         new_event.leave_in(leaving_in)
-        events = Events()
+        events = Events(CFG_FILE)
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
@@ -43,7 +43,7 @@ class EventsTest(unittest.TestCase):
         new_event = CreateEvent()
         leaving_in = 2745
         new_event.leave_in(leaving_in)
-        events = Events()
+        events = Events(CFG_FILE)
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
@@ -52,7 +52,7 @@ class EventsTest(unittest.TestCase):
         new_event = CreateEvent()
         leaving_in = -27
         new_event.leave_in(leaving_in)
-        events = Events()
+        events = Events(CFG_FILE)
         next_event = events.fetch_next_event()
         self.assertIsNone(next_event)
 
@@ -62,7 +62,7 @@ class EventsTest(unittest.TestCase):
         new_event = CreateEvent()
         leaving_in = -2
         new_event.leave_in(leaving_in)
-        events = Events()
+        events = Events(CFG_FILE)
         next_event = events.fetch_next_event()
         self.assertLess(next_event - leaving_in, 1)
 
@@ -73,6 +73,7 @@ class EventsTest(unittest.TestCase):
         # We need to test that new_event makes decision to keep the
         # heaters running when minutes to next event is 0
         self.assertTrue(True)
-        
+
+
 if __name__ == '__main__':
     unittest.main()
