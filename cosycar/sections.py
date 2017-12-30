@@ -131,10 +131,6 @@ class Sections():
     def find_req_energy(self, weather):
         energy = 0
         temperature = weather['temperature']
-
-        print(self.heater_name)
-        print(self.heater_section)
-        
         keys = list(self.energy_table.keys())
         keys = list(map(int, keys))
         max_temperature = max(keys)
@@ -214,7 +210,6 @@ class Compartment(Sections):
         super().__init__()
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
-        print("My name: {}".format(self.heater_name))
         self.heater_power = self.get_heater_power(self.heater_name)
         self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
         self.energy_table = self.get_energy_table()
