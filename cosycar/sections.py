@@ -11,7 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class Sections():
-    def __init__(self):
+    def __init__(self, config_file):
+        self.config_file = config_file
         self.minutes_to_next_event = None
         self.req_energy = 0
         config = self._read_config()
@@ -20,7 +21,9 @@ class Sections():
         self._wunder_key = config.get('WUNDER_WEATHER', 'wunder_key')
 
     def available_sections(self):
-        available_sections = [Engine(), Compartment(), Windscreen()]
+        available_sections = [Engine(self.config_file),
+                              Compartment(self.config_file),
+                              Windscreen(self.config_file)]
         return available_sections
 
     def check_in_use(self, section):
@@ -79,7 +82,7 @@ class Sections():
 
     def _read_config(self):
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(self.config_file)
         return config
 
     def _there_is_an_event(self):
@@ -140,8 +143,8 @@ class Sections():
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_file):
+        super().__init__(config_file)
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
@@ -159,8 +162,8 @@ class Engine(Sections):
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_file):
+        super().__init__(config_file)
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)
@@ -179,8 +182,8 @@ class Windscreen(Sections):
     _section_name = 'SECTION_WINDSCREEN'
     _req_energy = 700
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config_file):
+        super().__init__(config_file)
         self.in_use = self.check_in_use(self._section_name)
         self.heater_name = self.get_heater_name(self._section_name)
         self.heater_power = self.get_heater_power(self.heater_name)

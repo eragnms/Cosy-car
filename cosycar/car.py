@@ -12,12 +12,12 @@ log = logging.getLogger(__name__)
 
 class Car():
     def __init__(self):
-        self._sections = Sections()
+        pass
 
     def check_heaters(self):
         events = Events()
         minutes_to_next_event = events.fetch_next_event()
-        sections = Sections()
+        sections = Sections("hej")
         available_sections = sections.available_sections()
         for section in available_sections:
             section.set_heater_state(minutes_to_next_event)
