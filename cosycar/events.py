@@ -17,11 +17,13 @@ class Events():
         config = configparser.ConfigParser()
         config.read(self._config_file)
         self._overtime = config.getint('CAR_SETTINGS', 'overtime')
+        self._check_email = config.getboolean('EMAIL', 'check_email')
 
     def fetch_next_event(self):
         minutes_to_file_event = self._minutes_to_file_event()
         # Note! A negative value represents an event that has passed.
-        self._check_email_event()
+        if self._check_email:
+            self._check_email_event()
         minutes_to_calendar_event = None
         minutes_to_next_event = self._pick_time_to_use(
             minutes_to_calendar_event,

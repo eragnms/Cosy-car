@@ -20,7 +20,8 @@ class Sections():
         self._country = config.get('WUNDER_WEATHER', 'country')
         self._city = config.get('WUNDER_WEATHER', 'city')
         self._wunder_key = config.get('WUNDER_WEATHER', 'wunder_key')
-
+        self.weather = []
+        
     def available_sections(self):
         available_sections = [
             Engine(self.config_file),
@@ -101,7 +102,9 @@ class Sections():
             log.debug("Checking for on/off")
             if minutes_to_run_before_event >= self.minutes_to_next_event:
                 if not currently_on:
-                    log.info("Turn on: {}".format(self.heater_zwave_id))
+                    temp = self.weather['temperature']
+                    log_txt = "Turn on: {}, temperature: {}"
+                    log.info(log_txt.format(self.heater_zwave_id, temp))
                 switch.turn_on()
                 switch_should_be_on = True
             else:
@@ -123,9 +126,9 @@ class Sections():
         weather = local_weather.get_weather()
         return weather
 
-    def find_req_energy(self, weather):
+    def find_req_energy(self):
         energy = 0
-        temperature = weather['temperature']
+        temperature = self.weather['temperature']
         keys = list(self.energy_table.keys())
         keys = list(map(int, keys))
         max_temperature = max(keys)
@@ -153,8 +156,8 @@ class Sections():
     def our_set_heater_state(self, minutes_to_next_event):
         if self.in_use:
             self.minutes_to_next_event = minutes_to_next_event
-            weather = self.fetch_weather()
-            self.req_energy = self.find_req_energy(weather)
+            self.weather = self.fetch_weather()
+            self.req_energy = self.find_req_energy()
             self.should_be_on()
 
 
