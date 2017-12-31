@@ -2,14 +2,13 @@
 
 import unittest
 import logging
-import datetime
 from unittest.mock import mock_open, patch
+import datetime
 
+from cosycar.create_events import CreateEvent
 from cosycar.constants import Constants
-from cosycar.car import Car
 
-
-class CarTests(unittest.TestCase):
+class CreateEventTests(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(
             filename='tests/data/cosycar.log',
@@ -20,13 +19,13 @@ class CarTests(unittest.TestCase):
         pass
 
     def test_leave_in(self):
-        car = Car()
+        new_event = CreateEvent()
         now = datetime.datetime.now()
         leave_in_minutes = 13
         leave_in_date = now + datetime.timedelta(minutes=leave_in_minutes)
         m = mock_open()
         with patch('builtins.open', m, create=True):
-            car.leave_in(leave_in_minutes)
+            new_event.leave_in(leave_in_minutes)
         handle = m()
         ans = leave_in_date.strftime('%Y,%m,%d,%H,%M')
         handle.write.assert_called_once_with(ans)
@@ -36,13 +35,13 @@ class CarTests(unittest.TestCase):
         """ This one might fail when seconds wrap over to a
         minute, while it get truncated away in the file, not
         using a resultion higher than minutes """
-        car = Car()
+        new_event = CreateEvent()
         now = datetime.datetime.now()
         leave_in_seconds = 125
         leave_in_date = now + datetime.timedelta(seconds=leave_in_seconds)
         m = mock_open()
         with patch('builtins.open', m, create=True):
-            car.leave_in_seconds(leave_in_seconds)
+            new_event.leave_in_seconds(leave_in_seconds)
         handle = m()
         ans = leave_in_date.strftime('%Y,%m,%d,%H,%M')
         handle.write.assert_called_once_with(ans)
@@ -53,13 +52,8 @@ class CarTests(unittest.TestCase):
         two_hours_back = now - datetime.timedelta(hours=2)
         one_day_forward = two_hours_back + datetime.timedelta(days=1)
         m = mock_open()
-        car = Car()
+        new_event = CreateEvent()
         with patch('builtins.open', m, create=True):
-            car.leave_at(two_hours_back.strftime('%H:%M'))
+            new_event.leave_at(two_hours_back.strftime('%H:%M'))
         handle = m()
         ans = one_day_forward.strftime('%Y,%m,%d,%H,%M')
-        handle.write.assert_called_once_with(ans)
-
-
-if __name__ == '__main__':
-    unittest.main()

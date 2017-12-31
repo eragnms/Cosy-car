@@ -27,7 +27,7 @@ HTTP_PORT = 8085
 # tests. For example by setting the value to 60/30 the total execution
 # time of the tests will be 30 times faster than when the "real" value
 # of 60 is used.
-SECONDS_PER_MINUTE = 60 / 30
+SECONDS_PER_MINUTE = 60
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def main():
         except Exception:
             teardown()
             raise Exception(traceback.format_exc())
-
+        teardown()
 
 def setup():
     clean_up_files()
@@ -99,6 +99,7 @@ def teardown():
     kill_http_listen_process()
     restore_cfg_file()
     clean_up_files()
+
 
 def install_integration_cfg_file():
     home_dir = os.environ['HOME']
@@ -123,12 +124,14 @@ def start_http_listen_process():
     SetupParams.reflect_process = process
     log.debug("Started reflect: {}".format(process))
 
+
 def modify_cfg_file_for_testing():
     home_dir = os.environ['HOME']
     cfg_file = os.path.join(home_dir, CONFIG_FILE)
     config = save_current_cfg_file_settings(cfg_file)
     config['ZWAVE_CONTROLLER']['ip_address'] = 'localhost'
     config['ZWAVE_CONTROLLER']['port'] = str(HTTP_PORT)
+    config['EMAIL']['check_email'] = 'False'
     with open(cfg_file, 'w') as configfile:
         config.write(configfile)
 
@@ -138,29 +141,32 @@ def save_current_cfg_file_settings(cfg_file):
     config.read(cfg_file)
     ip_address = config['ZWAVE_CONTROLLER']['ip_address']
     port = config['ZWAVE_CONTROLLER']['port']
+    use_email = config['EMAIL']['check_email']
     SetupParams.cfg_file = cfg_file
     SetupParams.ip_address = ip_address
     SetupParams.port = port
+    SetupParams.use_email = use_email
     return config
 
 
 def kill_http_listen_process():
     os.kill(SetupParams.reflect_process.pid, signal.SIGTERM)
 
-    
+
 def restore_cfg_file():
     config = configparser.ConfigParser()
     cfg_file = SetupParams.cfg_file
     config.read(cfg_file)
     config['ZWAVE_CONTROLLER']['ip_address'] = str(SetupParams.ip_address)
     config['ZWAVE_CONTROLLER']['port'] = str(SetupParams.port)
+    config['EMAIL']['check_email'] = str(SetupParams.use_email)
     with open(cfg_file, 'w') as configfile:
         config.write(configfile)
 
 
 def clean_up_files():
     try:
-        #os.remove(HTTP_LOG_FILE)
+        os.remove(HTTP_LOG_FILE)
         home_dir = os.environ['HOME']
         cfg_file = os.path.join(home_dir, CONFIG_FILE)
         cfg_file_bkp = os.path.join(home_dir, CONFIG_FILE_BKP)
@@ -174,6 +180,7 @@ class SetupParams():
     reflect_process = None
     ip_address = None
     port = None
+    use_email = None
 
 
 class Heater():
