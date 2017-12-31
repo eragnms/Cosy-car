@@ -165,6 +165,8 @@ class CarSectionTests(unittest.TestCase):
         switch_should_be_on = section.should_be_on()
         self.assertTrue(switch_should_be_on)
 
+ https://stackoverflow.com/questions/39004540/mock-entire-python-class        
+
     @patch('cosycar.zwave.Switch')
     @patch('cosycar.zwave.Switch.is_on')
     @patch('cosycar.zwave.Switch.turn_off')

@@ -97,6 +97,7 @@ class Sections():
         print("here")
         print("****************")
         switch = Switch(self.heater_zwave_id, self.config_file)
+        print(type(switch))
         print("****************")
         print("and here")
         print("****************")
