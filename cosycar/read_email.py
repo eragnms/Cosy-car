@@ -12,9 +12,9 @@ log = logging.getLogger(__name__)
 
 
 class ReadEmail():
-    def __init__(self):
+    def __init__(self, config_file):
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(config_file)
         self._org_email = config.get('EMAIL', 'org_email')
         self._from_email = config.get('EMAIL', 'email_address')
         self._from_email += self._org_email
