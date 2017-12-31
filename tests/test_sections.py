@@ -10,7 +10,6 @@ from cosycar.sections import Sections
 from cosycar.sections import Engine
 from cosycar.sections import Compartment
 from cosycar.sections import Windscreen
-from cosycar.zwave import Switch
 
 CFG_FILE = 'tests/data/cosycar_template.cfg'
 
@@ -147,10 +146,10 @@ class CarSectionTests(unittest.TestCase):
         energy = section.find_req_energy(weather)
         self.assertEqual(energy, 1166)
 
-    @patch('cosycar.zwave.Switch')
-    @patch('cosycar.zwave.Switch.is_on')
-    @patch('cosycar.zwave.Switch.turn_off')
-    @patch('cosycar.zwave.Switch.turn_on')
+    @patch('cosycar.sections.Switch')
+    @patch('cosycar.sections.Switch.is_on')
+    @patch('cosycar.sections.Switch.turn_off')
+    @patch('cosycar.sections.Switch.turn_on')
     def test_should_be_on_currently_off(
             self,
             mock_turn_on,
@@ -165,18 +164,16 @@ class CarSectionTests(unittest.TestCase):
         switch_should_be_on = section.should_be_on()
         self.assertTrue(switch_should_be_on)
 
- https://stackoverflow.com/questions/39004540/mock-entire-python-class        
-
-    @patch('cosycar.zwave.Switch')
-    @patch('cosycar.zwave.Switch.is_on')
-    @patch('cosycar.zwave.Switch.turn_off')
-    @patch('cosycar.zwave.Switch.turn_on')
+    @patch('cosycar.sections.Switch')
+    @patch('cosycar.sections.Switch.is_on')
+    @patch('cosycar.sections.Switch.turn_off')
+    @patch('cosycar.sections.Switch.turn_on')
     def test_should_be_on_currently_on(
             self,
             mock_turn_on,
             mock_turn_off,
             mock_is_on,
-            switch_mock, ):
+            mock_switch):
         section = Engine(CFG_FILE)
         section.minutes_to_next_event = 10
         section.req_energy = 100
@@ -185,10 +182,10 @@ class CarSectionTests(unittest.TestCase):
         switch_should_be_on = section.should_be_on()
         self.assertTrue(switch_should_be_on)
 
-    @patch('cosycar.zwave.Switch')
-    @patch('cosycar.zwave.Switch.is_on')
-    @patch('cosycar.zwave.Switch.turn_off')
-    @patch('cosycar.zwave.Switch.turn_on')
+    @patch('cosycar.sections.Switch')
+    @patch('cosycar.sections.Switch.is_on')
+    @patch('cosycar.sections.Switch.turn_off')
+    @patch('cosycar.sections.Switch.turn_on')
     def test_should_be_off_currently_on(
             self,
             mock_turn_on,

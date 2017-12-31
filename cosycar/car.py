@@ -13,7 +13,7 @@ class Car():
         self._config_file = config_file
 
     def check_heaters(self):
-        events = Events()
+        events = Events(self._config_file)
         minutes_to_next_event = events.fetch_next_event()
         sections = Sections(self._config_file)
         available_sections = sections.available_sections()
