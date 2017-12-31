@@ -23,7 +23,7 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '1.0.0rc3'
+__version__ = '1.0.0.rc4'
 
 
 def main():
