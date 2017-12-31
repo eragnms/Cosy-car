@@ -12,9 +12,10 @@ log = logging.getLogger(__name__)
 
 
 class Events():
-    def __init__(self):
+    def __init__(self, config_file):
+        self._config_file = config_file
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(self._config_file)
         self._overtime = config.getint('CAR_SETTINGS', 'overtime')
 
     def fetch_next_event(self):
@@ -22,9 +23,10 @@ class Events():
         # Note! A negative value represents an event that has passed.
         self._check_email_event()
         minutes_to_calendar_event = None
-        minutes_to_next_event = self._pick_time_to_use(minutes_to_calendar_event,
-                                                       minutes_to_file_event,
-                                                       None)
+        minutes_to_next_event = self._pick_time_to_use(
+            minutes_to_calendar_event,
+            minutes_to_file_event,
+            None)
         if minutes_to_next_event is not None:
             log.info("Next event in: {}".format(minutes_to_next_event))
         return minutes_to_next_event
@@ -34,7 +36,7 @@ class Events():
             if event_1 is None:
                 event_1 = 999
             if event_2 is None:
-                event_2 = 999    
+                event_2 = 999
             if event_3 is None:
                 event_3 = 999
             time_to_use = min(event_1, event_2, event_3)
@@ -74,7 +76,7 @@ class Events():
         return minutes_to_file_event
 
     def _check_email_event(self):
-        email = ReadEmail()
+        email = ReadEmail(self._config_file)
         email.fetch()
 
     def _passed_event(self, event_time):

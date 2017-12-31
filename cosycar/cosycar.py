@@ -62,7 +62,7 @@ def main():
         "-t", "--test", help="various tests", action="store_true")
     args = parser.parse_args()
     if args.check_heaters:
-        car = Car()
+        car = Car(Constants.cfg_file)
         car.check_heaters()
     elif args.leave_in:
         new_event = CreateEvent()

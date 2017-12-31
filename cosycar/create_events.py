@@ -8,6 +8,7 @@ from cosycar.constants import Constants
 
 log = logging.getLogger(__name__)
 
+
 class CreateEvent():
     def leave_in(self, leave_in_minutes):
         log.debug("Running leave in minutes: {}".format(leave_in_minutes))

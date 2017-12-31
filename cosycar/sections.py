@@ -6,12 +6,14 @@ import configparser
 from cosycar.constants import Constants
 from cosycar.zwave import Switch
 from cosycar.weather import CosyWeather
+from cosycar.error import CosycarError
 
 log = logging.getLogger(__name__)
 
 
 class Sections():
-    def __init__(self):
+    def __init__(self, config_file):
+        self.config_file = config_file
         self.minutes_to_next_event = None
         self.req_energy = 0
         config = self._read_config()
@@ -20,7 +22,11 @@ class Sections():
         self._wunder_key = config.get('WUNDER_WEATHER', 'wunder_key')
 
     def available_sections(self):
-        available_sections = [Engine(), Compartment(), Windscreen()]
+        available_sections = [
+            Engine(self.config_file),
+            Compartment(self.config_file),
+            Windscreen(self.config_file)
+        ]
         return available_sections
 
     def check_in_use(self, section):
@@ -79,7 +85,7 @@ class Sections():
 
     def _read_config(self):
         config = configparser.ConfigParser()
-        config.read(Constants.cfg_file)
+        config.read(self.config_file)
         return config
 
     def _there_is_an_event(self):
@@ -87,36 +93,33 @@ class Sections():
 
     def should_be_on(self):
         switch_should_be_on = False
-        if self.in_use:
-            switch = Switch(self.heater_zwave_id)
-            currently_on = switch.is_on()
-            if self._there_is_an_event():
-                h_to_run_before_event = self.req_energy / self.heater_power
-                minutes_to_run_before_event = h_to_run_before_event * 60
-                log.debug("Checking for on/off")
-                if minutes_to_run_before_event >= self.minutes_to_next_event:
-                    if not currently_on:
-                        log.info("Turn on: {}".format(self.heater_zwave_id))
-                    switch.turn_on()
-                    switch_should_be_on = True
-                else:
-                    if currently_on:
-                        log.info("Turn off: {}".format(self.heater_zwave_id))
-                    switch.turn_off()
-                    switch_should_be_on = False
+        switch = Switch(self.heater_zwave_id, self.config_file)
+        currently_on = switch.is_on()
+        if self._there_is_an_event():
+            h_to_run_before_event = self.req_energy / self.heater_power
+            minutes_to_run_before_event = h_to_run_before_event * 60
+            log.debug("Checking for on/off")
+            if minutes_to_run_before_event >= self.minutes_to_next_event:
+                if not currently_on:
+                    log.info("Turn on: {}".format(self.heater_zwave_id))
+                switch.turn_on()
+                switch_should_be_on = True
             else:
                 if currently_on:
                     log.info("Turn off: {}".format(self.heater_zwave_id))
                 switch.turn_off()
                 switch_should_be_on = False
         else:
-            log.debug("Section {} not in use".format(self._section_name))
+            if currently_on:
+                log.info("Turn off: {}".format(self.heater_zwave_id))
+            switch.turn_off()
+            switch_should_be_on = False
         return switch_should_be_on
 
     def fetch_weather(self):
-        local_weather = CosyWeather(self._country, self._city,
-                                    self._wunder_key, Constants.weather_file,
-                                    Constants.weather_interval)
+        local_weather = CosyWeather(
+            self._country, self._city, self._wunder_key,
+            Constants.weather_storage_file, Constants.weather_interval)
         weather = local_weather.get_weather()
         return weather
 
@@ -136,60 +139,57 @@ class Sections():
         energy = self.energy_table[str(temp_key)]
         return energy
 
+    def our_init(self):
+        self.in_use = self.check_in_use(self._section_name)
+        if self.in_use:
+            self.heater_name = self.get_heater_name(self._section_name)
+            if not self.heater_name:
+                txt = 'Section set to be in use does not have a heater name'
+                raise CosycarError(txt)
+            self.heater_power = self.get_heater_power(self.heater_name)
+            self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
+            self.energy_table = self.get_energy_table()
+
+    def our_set_heater_state(self, minutes_to_next_event):
+        if self.in_use:
+            self.minutes_to_next_event = minutes_to_next_event
+            weather = self.fetch_weather()
+            self.req_energy = self.find_req_energy(weather)
+            self.should_be_on()
+
 
 class Engine(Sections):
     _section_name = 'SECTION_ENGINE'
 
-    def __init__(self):
-        super().__init__()
-        self.in_use = self.check_in_use(self._section_name)
-        self.heater_name = self.get_heater_name(self._section_name)
-        self.heater_power = self.get_heater_power(self.heater_name)
-        self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        self.energy_table = self.get_energy_table()
+    def __init__(self, config_file):
+        super().__init__(config_file)
+        self.our_init()
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Engine set_heater_state")
-        self.minutes_to_next_event = minutes_to_next_event
-        weather = self.fetch_weather()
-        self.req_energy = self.find_req_energy(weather)
-        self.should_be_on()
+        self.our_set_heater_state(minutes_to_next_event)
 
 
 class Compartment(Sections):
     _section_name = 'SECTION_COMPARTMENT'
 
-    def __init__(self):
-        super().__init__()
-        self.in_use = self.check_in_use(self._section_name)
-        self.heater_name = self.get_heater_name(self._section_name)
-        self.heater_power = self.get_heater_power(self.heater_name)
-        self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        self.energy_table = self.get_energy_table()
+    def __init__(self, config_file):
+        super().__init__(config_file)
+        self.our_init()
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Compartment_heater_state")
-        self.minutes_to_next_event = minutes_to_next_event
-        weather = self.fetch_weather()
-        self.req_energy = self.find_req_energy(weather)
-        self.should_be_on()
+        self.our_set_heater_state(minutes_to_next_event)
 
 
 class Windscreen(Sections):
     _section_name = 'SECTION_WINDSCREEN'
     _req_energy = 700
 
-    def __init__(self):
-        super().__init__()
-        self.in_use = self.check_in_use(self._section_name)
-        self.heater_name = self.get_heater_name(self._section_name)
-        self.heater_power = self.get_heater_power(self.heater_name)
-        self.heater_zwave_id = self.get_heater_zwave_id(self.heater_name)
-        self.energy_table = self.get_energy_table()
+    def __init__(self, config_file):
+        super().__init__(config_file)
+        self.our_init()
 
     def set_heater_state(self, minutes_to_next_event):
         log.debug("Windscreen set_heater_state")
-        self.minutes_to_next_event = minutes_to_next_event
-        weather = self.fetch_weather()
-        self.req_energy = self.find_req_energy(weather)
-        self.should_be_on()
+        self.our_set_heater_state(minutes_to_next_event)
