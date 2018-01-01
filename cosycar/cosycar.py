@@ -2,18 +2,13 @@
 
 import argparse
 import logging
+import configparser
 
 from cosycar.constants import Constants
 from cosycar.car import Car
 from cosycar.create_events import CreateEvent
 
 from cosycar.zwave import Switch
-
-# Off = http://$ip_address:3480/data_request?id=action&output_forma
-# t=xml&DeviceNum=$my_id&serviceId=urn:upnp-org:serviceId:SwitchPow
-# er1&action=SetTarget&newTargetValue=0
-
-#     print('The config file is in {}/.config'.format(os.environ['HOME']))
 
 # Version numbering scheme, see
 # https://packaging.python.org/distributing/#choosing-a-versioning-scheme
@@ -23,13 +18,17 @@ from cosycar.zwave import Switch
 # 1.2.0rc1    # Release Candidate
 # 1.2.0       # Final Release
 # 1.2.0.post1 # Post Release
-__version__ = '1.0.0rc5'
+__version__ = '1.0.0'
 
 
 def main():
+    config = configparser.ConfigParser()
+    config.read(Constants.cfg_file)
+    log_file = config.get('GENERAL', 'log_file')
+    log_level = config.get('GENERAL', 'log_level')
     logging.basicConfig(
-        filename='/tmp/should_be_elsewhere.log',
-        level='INFO',
+        filename=log_file,
+        level=log_level,
         format=Constants.log_format)
     log = logging.getLogger(__name__)
     log.debug("Cosycar: {}".format(__version__))
