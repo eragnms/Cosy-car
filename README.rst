@@ -55,6 +55,9 @@ Installation
 Install the script with (cd into the root of the project):
 
   $ pip install --user .
+
+Then copy or merge the configuration template file into the configuration file.
+
   $ cp ~/.config/cosycar_template.cfg ~/.config/cosycar.cfg
 
 Run the script
