@@ -41,22 +41,36 @@ class CosyWeather():
         weather_data = {}
         if self._should_fetch_from_wunder():
             weather_url = self._build_weather_url()
-            weather = self._fetch_wunder_weather(weather_url)
-            weather_json = self._decode_deserialize(weather)
-            self._check_weather_data(weather_json)
-            temp = weather_json['current_observation']['temp_c']
-            weather_data['temperature'] = temp
-            wind_speed = weather_json['current_observation']['wind_kph']
-            weather_data['wind_speed'] = wind_speed
-            self._save_weather(weather_data)
+            try:
+                weather = self._fetch_wunder_weather(weather_url)
+                weather_json = self._decode_deserialize(weather)
+                self._check_weather_data(weather_json)
+                temp = weather_json['current_observation']['temp_c']
+                weather_data['temperature'] = temp
+                wind_speed = weather_json['current_observation']['wind_kph']
+                weather_data['wind_speed'] = wind_speed
+                self._save_weather(weather_data)
+            except CosyWeatherError as e:
+                weather_data = self._fetch_file_weather()
+                log.warning('Failed to fetch wunder: {}'.format(e))
         else:
+            weather_data = self._fetch_file_weather()
+        return weather_data
+
+    def _fetch_file_weather(self):
+        weather_data = {}
+        if os.path.isfile(self._weather_file):
             config = configparser.ConfigParser()
             config.read(self._weather_file)
             weather_infos = config.options('WEATHER_DATA')
             for info in weather_infos:
                 weather_data[info] = config.getfloat('WEATHER_DATA', info)
+        else:
+            weather_data = {'temperature': 0,
+                            'wind_speed': 0}
+            log.warning('No weather file: {}'.format(self._weather_file))
         return weather_data
-
+                
     def _should_fetch_from_wunder(self):
         config = configparser.ConfigParser()
         if os.path.isfile(self._weather_file):
@@ -102,6 +116,9 @@ class CosyWeather():
             raise CosyWeatherError('Must not use åäö in location')
         except urllib3.exceptions.MaxRetryError:
             raise CosyWeatherError('Too many weather fetches')
+        except:
+            txt = 'Unexpected error: {}'.format(sys.exec_info()[0])
+            raise CosyWeatherError(txt)
         return f
 
     def _decode_deserialize(self, f):
