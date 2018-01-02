@@ -109,12 +109,12 @@ class Sections():
                 switch_should_be_on = True
             else:
                 if currently_on:
-                    log.info("Turn off: {}".format(self.heater_zwave_id))
+                    log.debug("Turn off: {}".format(self.heater_zwave_id))
                 switch.turn_off()
                 switch_should_be_on = False
         else:
             if currently_on:
-                log.info("Turn off: {}".format(self.heater_zwave_id))
+                log.debug("Turn off: {}".format(self.heater_zwave_id))
             switch.turn_off()
             switch_should_be_on = False
         return switch_should_be_on
