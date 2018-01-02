@@ -66,6 +66,8 @@ class WeatherTests(unittest.TestCase):
         weather.get_weather()
         self.assertTrue(fetch_mock.call_count == 1)
 
+    def test_fetch_from_wunder_failure(self):
+        self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()
