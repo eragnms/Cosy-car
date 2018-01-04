@@ -7,6 +7,7 @@ import configparser
 
 from cosycar.constants import Constants
 from cosycar.read_email import ReadEmail
+from cosycar.create_events import CreateEvent
 
 log = logging.getLogger(__name__)
 
@@ -20,10 +21,10 @@ class Events():
         self._check_email = config.getboolean('EMAIL', 'check_email')
 
     def fetch_next_event(self):
-        minutes_to_file_event = self._minutes_to_file_event()
-        # Note! A negative value represents an event that has passed.
         if self._check_email:
             self._check_email_event()
+        minutes_to_file_event = self._minutes_to_file_event()
+        # Note! A negative value represents an event that has passed.
         minutes_to_calendar_event = None
         minutes_to_next_event = self._pick_time_to_use(
             minutes_to_calendar_event,
@@ -71,6 +72,9 @@ class Events():
                     minutes_to_file_event = minutes_to_event
                 else:
                     minutes_to_file_event = None
+                    log.info("Overtime passed, deleting leave_at file")
+                    delete_event = CreateEvent()
+                    delete_event.delete()                    
             else:
                 minutes_to_file_event = minutes_to_event
         else:
