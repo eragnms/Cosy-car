@@ -51,8 +51,8 @@ class CosyWeather():
                 weather_data['wind_speed'] = wind_speed
                 self._save_weather(weather_data)
             except CosyWeatherError as e:
-                weather_data = self._fetch_file_weather()
                 log.warning('Failed to fetch wunder: {}'.format(e))
+                weather_data = self._fetch_file_weather()
         else:
             weather_data = self._fetch_file_weather()
         return weather_data

@@ -30,7 +30,7 @@ class Events():
             minutes_to_file_event,
             None)
         if minutes_to_next_event is not None:
-            log.info("Next event in: {}".format(minutes_to_next_event))
+            log.debug("Next event in: {}".format(minutes_to_next_event))
         return minutes_to_next_event
 
     def _pick_time_to_use(self, event_1, event_2, event_3):
