@@ -53,6 +53,9 @@ class CosyWeather():
             except CosyWeatherError as e:
                 log.warning('Failed to fetch wunder: {}'.format(e))
                 weather_data = self._fetch_file_weather()
+            except Exception as e:
+                log.warning('Failed to fetch wunder: {}'.format(e))
+                weather_data = self._fetch_file_weather()
         else:
             weather_data = self._fetch_file_weather()
         return weather_data
