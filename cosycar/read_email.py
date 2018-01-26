@@ -25,6 +25,8 @@ class ReadEmail():
 
     def fetch(self):
         mail = imaplib.IMAP4_SSL(self._smtp_server)
+        log.debug("Email smtp: {}".format(self._smtp_server))
+        log.debug("Email from: {}".format(self._from_email))
         mail.login(self._from_email, self._from_pwd)
         mail.select('inbox')
 
